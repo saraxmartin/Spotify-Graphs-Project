@@ -6,6 +6,20 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
+def addNode(g: nx.DiGraph, artist: str) -> nx.DiGraph:
+    """
+    Add a node to the graph with all its information.
+    :param g: nx.Graph(), the graph we want to visualize.
+    :param artist: artist IP
+    """
+    g.add_node(artist,
+                name = sp.artist(artist)["name"],
+                followers = sp.artist(artist)["followers"]["total"],
+                popularity = sp.artist(artist)["popularity"],
+                genres = ", ".join(sp.artist(artist)["genres"]))
+
+    return g
+
 def visualize_graph(G: nx.DiGraph, title: str):
     """
     Visualize the graph with artists' names.
@@ -79,18 +93,22 @@ def crawler(sp: spotipy.client.Spotify, seed: str, max_nodes_to_crawl: int, stra
 
     # Initialize the graph with the seed node
     G = nx.DiGraph()
-    G.add_node(seed,
-               name = sp.artist(seed)["name"],
-               followers = sp.artist(seed)["followers"]["total"],
-               popularity = sp.artist(seed)["popularity"],
-               genres = ", ".join(sp.artist(seed)["genres"]))
+    G = addNode(G,seed)
 
     # Initialize lists of visited and queue
-    visited = [seed] # Stores already visited artists
+    created = [seed] # Stores created nodes (not explored)
+    visited = [seed] # Stores already visited/explored artists
     queue = [] # Stores artists to visit
 
     # Add to the queue the seed artist related artists
-    queue.extend(related_artists(sp, seed))
+    son_artists = related_artists(sp, seed)
+    queue.extend(son_artists)
+
+    # Add son artist of the seed artists to the graph
+    for artist in son_artists:
+        G = addNode(G,artist)
+        G.add_edge(seed,artist)
+        created.append(artist)
 
     seed_name = G.nodes[seed]["name"]
 
@@ -98,35 +116,41 @@ def crawler(sp: spotipy.client.Spotify, seed: str, max_nodes_to_crawl: int, stra
         while (len(visited) < max_nodes_to_crawl+1) and (len(queue) != 0):
 
             # Get the first artist of the queue and its root artist
-            next_artist = queue[0][0]
-            current_artist = queue[0][1]
+            current_artist = queue[0][0]
+            root_artist = queue[0][1]
 
-            if next_artist in visited:
-                # Pop artist from queue
-                queue = queue[1:]
+            # Add an edge between current_artist and next_artist
+            #G.add_edge(root_artist,current_artist) #edge ya esta
+            
+            # Pop artist from queue
+            queue = queue[1:]
+            
+            # Get related artists of next_artist
+            son_artists = related_artists(sp, current_artist)
 
-            elif next_artist not in visited:
-                # Add new artist node from the root artist
-                G.add_node(next_artist,
-                          name = sp.artist(next_artist)["name"],
-                          followers = sp.artist(next_artist)["followers"]["total"],
-                          popularity = sp.artist(next_artist)["popularity"],
-                          genres = ", ".join(sp.artist(next_artist)["genres"]))
-                G.add_edge(current_artist,next_artist)
-
-                # Add new artists to visited and pop from queue
-                visited.append(next_artist)
-                queue = queue[1:]
+            if current_artist not in visited:
+                # Add new artists to visited
+                visited.append(current_artist)
 
                 if strategy == "BFS":
                     # Add the related artists of the new artists to the end of the queue
-                    queue.extend(related_artists(sp, next_artist))
+                    queue.extend(son_artists)
+
                 elif strategy == "DFS":
                     # Add the related artists of the new artists to the beggining of the queue
-                    queue = related_artists(sp, next_artist) + queue
+                    queue = son_artists + queue
+            
+                # Add son artists to graph
+                for artist in son_artists:
+                    if artist not in created:
+                        G = addNode(G,artist)
+                    else:
+                        created.append(artist)
+                    G.add_edge(current_artist,artist)
 
-                # Update progress bar
-                pbar.update(1)
+
+            # Update progress bar
+            pbar.update(1)
 
     # Save file as graphml
     nx.write_graphml(G, out_filename)
@@ -223,7 +247,7 @@ if __name__ == "__main__":
     seed = search_artist(sp,"Taylor Swift")
 
     # Create and visualize the BFS graph
-    gb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/gB")
+    gb = crawler(sp, seed, max_nodes_to_crawl=25, strategy="BFS", out_filename="./graphs/gB")
     visualize_graph(gb, title="BFS Taylor Swift graph")
 
     # Create and visualize the DFS graph

@@ -17,6 +17,7 @@ def retrieve_bidirectional_edges(g: nx.DiGraph, out_filename: str) -> nx.Graph:
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
     #Idea: 1. Get all edges in graph and check which are undirected.
     #      2. Delete those edges that aren't undirected.
+    print()
     g_undirected = g.to_undirected()
     nx.write_graphml(g_undirected, out_filename)
     return g_undirected
@@ -33,7 +34,27 @@ def prune_low_degree_nodes(g: nx.Graph, min_degree: int, out_filename: str) -> n
     :return: a pruned networkx graph.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    removed_nodes = []
+    # Obtain a dictionary with key:node, value:degree
+    degrees = dict(g.degree())
+    # Delete nodes with degree < min_degree
+    for node, degree in degrees.items():
+        if degree < min_degree:
+            # Prune the node from the graph.
+            removed_nodes.append(node)
+            g.remove_node(node)
+
+    # Remove 0 degree nodes
+    degrees = dict(g.degree())
+    for node, degree in degrees.items():
+        if degree == 0:
+            # Prune the node from the graph.
+            removed_nodes.append(node)
+            g.remove_node(node)
+
+    print("List of removed nodes: ", removed_nodes)
+    nx.write_graphml(g, out_filename)
+    return g
     # ----------------- END OF FUNCTION --------------------- #
 
 
