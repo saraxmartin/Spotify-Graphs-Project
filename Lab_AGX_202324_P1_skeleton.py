@@ -163,11 +163,11 @@ if __name__ == "__main__":
     seed = search_artist(sp,"Taylor Swift")
 
     # Create and visualize the BFS graph
-    gb = crawler(sp, seed, max_nodes_to_crawl=25, strategy="BFS", out_filename="gB")
+    gb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/gB")
     visualize_graph(gb, title="BFS Taylor Swift graph")
 
     # Create and visualize the DFS graph
-    gd = crawler(sp, seed, max_nodes_to_crawl=25, strategy="DFS", out_filename="gD")
+    gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
     visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     # Create BFS graph for Pastel Ghost
     seed = search_artist(sp,"Pastel Ghost")
-    hb = crawler(sp, seed, max_nodes_to_crawl=25, strategy="BFS", out_filename="hB")
+    hb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/hB")
     visualize_graph(hb, title="BFS Pastel Ghost graph")
 
     # ------------------- END OF MAIN ------------------------ #

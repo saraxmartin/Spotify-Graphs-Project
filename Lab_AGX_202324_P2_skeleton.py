@@ -15,7 +15,11 @@ def retrieve_bidirectional_edges(g: nx.DiGraph, out_filename: str) -> nx.Graph:
     :return: a networkx undirected graph.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    #Idea: 1. Get all edges in graph and check which are undirected.
+    #      2. Delete those edges that aren't undirected.
+    g_undirected = g.to_undirected()
+    nx.write_graphml(g_undirected, out_filename)
+    return g_undirected
     # ----------------- END OF FUNCTION --------------------- #
 
 
