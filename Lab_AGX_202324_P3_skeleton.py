@@ -5,7 +5,7 @@ import networkx as nx
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
-def num_common_nodes(*arg):
+def num_common_nodes(list_graphs):
     """
     Return the number of common nodes between a set of graphs.
 
@@ -13,7 +13,17 @@ def num_common_nodes(*arg):
     :return: an integer, number of common nodes.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    nodes_graphs = [] 
+    # Get list of sets of unique nodes in each graph
+    for graph in list_graphs:
+        nodes = set(graph.nodes)
+        nodes_graphs.append(nodes)
+
+    common_nodes = set.intersection(*nodes_graphs)
+
+    num_common_nodes = len(common_nodes)
+
+    return num_common_nodes
     # ----------------- END OF FUNCTION --------------------- #
 
 
@@ -25,7 +35,16 @@ def get_degree_distribution(g: nx.Graph) -> dict:
     :return: dictionary with degree distribution (keys are degrees, values are number of occurrences).
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    degree_distribution = {}
+    for node in g.nodes():
+        degree = g.degree[node]
+        if degree not in degree_distribution.keys():
+            degree_distribution[degree] = 1
+        else:
+            degree_distribution[degree] += 1
+    
+    return degree_distribution
+
     # ----------------- END OF FUNCTION --------------------- #
 
 

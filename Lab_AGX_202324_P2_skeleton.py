@@ -102,5 +102,15 @@ def create_similarity_graph(artist_audio_features_df: pd.DataFrame, similarity: 
 
 if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
-    pass
+    # Get undirected graphs of gB and gD
+    gb = nx.read_gml("./graphs/gB")
+    gd = nx.read_gml("./graphs/gD")
+    gb2 = retrieve_bidirectional_edges(gb)
+    gd2 = retrieve_bidirectional_edges(gd)
+
+    # Get undirected graph gw
+    songs_df = pd.read_csv("songs.csv")
+    mean_audio_features_df = compute_mean_audio_features(songs_df)
+    gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
+    
     # ------------------- END OF MAIN ------------------------ #
