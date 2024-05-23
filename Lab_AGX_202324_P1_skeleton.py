@@ -145,7 +145,67 @@ def get_track_data(sp: spotipy.client.Spotify, graphs: list, out_filename: str) 
     :return: pandas dataframe with track data.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    artists = []
+
+    song_name, song_id, song_duration = [], [], []
+    acoustic, dance, energy, instrumental, liveness, loudness, speech, tempo, valence, popularity  = [],[],[],[],[],[],[],[],[],[]
+    album_name, album_id, album_date = [],[],[]
+    artist_name, artist_id = [],[]
+
+    for graph in graphs:
+      artists.extend(list(graph.nodes()))
+
+    for art_id in artists:
+      for track in sp.artist_top_tracks(art_id, country='ES')['tracks']:
+        artist = sp.artist(art_id)['name']
+        track_id = track['id']
+        song_name.append(track['name'])
+        song_id.append(track_id)
+        popularity.append(track['popularity'])
+
+        feat = sp.audio_features(track_id)[0]
+        song_duration.append(feat['duration_ms'])
+        acoustic.append(feat['acousticness'])
+        dance.append(feat['danceability'])
+        energy.append(feat['energy'])
+        speech.append(feat['speechiness'])
+        instrumental.append(feat['instrumentalness'])
+        loudness.append(feat['loudness'])
+        tempo.append(feat['tempo'])
+        liveness.append(feat['liveness'])
+        valence.append(feat['valence'])
+
+        album_name.append(track['album']['name'])
+        album_id.append(track['album']['id'])
+        album_date.append(track['album']['release_date'])
+
+        artist_name.append(artist)
+        artist_id.append(art_id)
+
+    df = pd.DataFrame({'song_name':song_name,
+                      'song_id':song_id,
+                      'duration':song_duration,
+                      'popularity':popularity,
+                      'danceability':dance,
+                      'acousticness':acoustic,
+                      'energy':energy,
+                      'instrumentalness':instrumental,
+                      'liveness':liveness,
+                      'loudness':loudness,
+                      'speechiness':speech,
+                      'tempo':tempo,
+                      'valence':valence,
+                      'album_name':album_name,
+                      'album_id':album_id,
+                      'album_release_date':album_date,
+                      'artist_name':artist_name,
+                      'artist_id':artist_id
+                      })
+
+    out_filename = out_filename + ".csv"
+    df.to_csv(out_filename, index=False)
+
+    return df
     # ----------------- END OF FUNCTION --------------------- #
 
 
@@ -171,7 +231,7 @@ if __name__ == "__main__":
     visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    #D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
+    D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
 
     # Create BFS graph for Pastel Ghost
     seed = search_artist(sp,"Pastel Ghost")
