@@ -106,9 +106,9 @@ def crawler(sp: spotipy.client.Spotify, seed: str, max_nodes_to_crawl: int, stra
 
     # Add son artist of the seed artists to the graph
     for artist in son_artists:
-        G = addNode(G,artist)
-        G.add_edge(seed,artist)
-        created.append(artist)
+        G = addNode(G,artist[0])
+        G.add_edge(seed,artist[0])
+        created.append(artist[0])
 
     seed_name = G.nodes[seed]["name"]
 
@@ -126,7 +126,11 @@ def crawler(sp: spotipy.client.Spotify, seed: str, max_nodes_to_crawl: int, stra
             queue = queue[1:]
             
             # Get related artists of next_artist
-            son_artists = related_artists(sp, current_artist)
+            try:
+                son_artists = related_artists(sp, current_artist)
+            except:
+                print(current_artist)
+                print(sp.artist(current_artist)["name"])
 
             if current_artist not in visited:
                 # Add new artists to visited
@@ -134,19 +138,20 @@ def crawler(sp: spotipy.client.Spotify, seed: str, max_nodes_to_crawl: int, stra
 
                 if strategy == "BFS":
                     # Add the related artists of the new artists to the end of the queue
-                    queue.extend(son_artists)
+                    to_visit = [artists[0] for artists in son_artists]
+                    queue.extend(to_visit)
 
                 elif strategy == "DFS":
                     # Add the related artists of the new artists to the beggining of the queue
                     queue = son_artists + queue
-            
+
                 # Add son artists to graph
                 for artist in son_artists:
-                    if artist not in created:
-                        G = addNode(G,artist)
+                    if artist[0] not in created:
+                        G = addNode(G,artist[0])
                     else:
-                        created.append(artist)
-                    G.add_edge(current_artist,artist)
+                        created.append(artist[0])
+                    G.add_edge(current_artist,artist[0])
 
 
             # Update progress bar
@@ -247,7 +252,7 @@ if __name__ == "__main__":
     seed = search_artist(sp,"Taylor Swift")
 
     # Create and visualize the BFS graph
-    gb = crawler(sp, seed, max_nodes_to_crawl=25, strategy="BFS", out_filename="./graphs/gB")
+    gb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/gB")
     visualize_graph(gb, title="BFS Taylor Swift graph")
 
     # Create and visualize the DFS graph
@@ -255,7 +260,7 @@ if __name__ == "__main__":
     visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
+    #D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
 
     # Create BFS graph for Pastel Ghost
     seed = search_artist(sp,"Pastel Ghost")
