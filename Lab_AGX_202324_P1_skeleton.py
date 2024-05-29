@@ -93,69 +93,58 @@ def crawler(sp: spotipy.client.Spotify, seed: str, max_nodes_to_crawl: int, stra
 
     # Initialize the graph with the seed node
     G = nx.DiGraph()
-    G = addNode(G,seed)
 
-    # Initialize lists of visited and queue
-    created = [seed] # Stores created nodes (not explored)
-    visited = [seed] # Stores already visited/explored artists
-    queue = [] # Stores artists to visit
+    # Initialize queue and visited lists
+    queue = [seed]
+    visited = set()
 
-    # Add to the queue the seed artist related artists
-    son_artists = related_artists(sp, seed)
-    queue.extend(son_artists)
-
-    # Add son artist of the seed artists to the graph
-    for artist in son_artists:
-        G = addNode(G,artist[0])
-        G.add_edge(seed,artist[0])
-        created.append(artist[0])
-
-    seed_name = G.nodes[seed]["name"]
-
-    with tqdm(total=max_nodes_to_crawl, desc=f"Creating {strategy} graph from {seed_name}") as pbar:
-        while (len(visited) < max_nodes_to_crawl+1) and (len(queue) != 0):
-
-            # Get the first artist of the queue and its root artist
-            current_artist = queue[0][0]
-            root_artist = queue[0][1]
-
-            # Add an edge between current_artist and next_artist
-            #G.add_edge(root_artist,current_artist) #edge ya esta
+    with tqdm(total=max_nodes_to_crawl, desc=f"Creating {strategy} graph from {seed}") as pbar:
+        while (len(visited) < max_nodes_to_crawl) and (len(queue) != 0):
             
+            # Get the first artist of the queue
+            current_artist = queue[0]
             # Pop artist from queue
             queue = queue[1:]
-            
-            # Get related artists of next_artist
-            try:
+
+            if current_artist in visited: # Only add edges but not touch the queue
                 son_artists = related_artists(sp, current_artist)
-            except:
-                print(current_artist)
-                print(sp.artist(current_artist)["name"])
+                for artists in son_artists:
+                    related_id = artists[0]
+                    if not G.has_edge(current_artist, related_id):
+                        G.add_edge(current_artist, related_id)
 
-            if current_artist not in visited:
+
+            elif current_artist not in visited:
                 # Add new artists to visited
-                visited.append(current_artist)
+                visited.add(current_artist)
+                # Create a node with the new artist
+                try:
+                    G = addNode(G,current_artist)
+                except:
+                    print("exception:",current_artist)
+                # Get its son artists
+                son_artists = related_artists(sp, current_artist)
 
-                if strategy == "BFS":
-                    # Add the related artists of the new artists to the end of the queue
-                    to_visit = [artists[0] for artists in son_artists]
-                    queue.extend(to_visit)
-
-                elif strategy == "DFS":
-                    # Add the related artists of the new artists to the beggining of the queue
-                    queue = son_artists + queue
-
-                # Add son artists to graph
-                for artist in son_artists:
-                    if artist[0] not in created:
-                        G = addNode(G,artist[0])
-                    else:
-                        created.append(artist[0])
-                    G.add_edge(current_artist,artist[0])
-
-
-            # Update progress bar
-            pbar.update(1)
+                # Iterate son artists and append to queue if not visited
+                for artists in son_artists:
+                    related_id = artists[0]
+                    
+                    # If son artists hasn't been visited yet and its not in the queue
+                    if (related_id not in visited) and (related_id not in queue):
+                        # Add node
+                        G = addNode(G,related_id)
+                        # Add to queue
+                        if strategy == "BFS":
+                            queue.append(related_id)
+                        elif strategy == "DFS":
+                            queue.insert(0,related_id) #= [related_id] + queue
+                    
+                    # Add edges
+                    if not G.has_edge(current_artist,related_id):
+                        G.add_edge(current_artist,related_id)
+                        
+                # Update progress bar
+                pbar.update(1)
 
     # Save file as graphml
     nx.write_graphml(G, out_filename)
@@ -244,7 +233,9 @@ if __name__ == "__main__":
 
     # Get Spotify client object
     CLIENT_ID = "59435f3767f5407395e8a21c91f1b719"
+    CLIENT_ID = "1bc3dfa825e14b1c9e79c0a5ad59d3d8"
     CLIENT_SECRET = "aa930752eeeb4e1ab36bd7bfff2cd0ff"
+    CLIENT_SECRET = "f3b8b67e5ce74c199b0292e40750fe58"
     auth_manager = SpotifyClientCredentials (client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
     sp = spotipy.Spotify(auth_manager=auth_manager)
 
