@@ -103,8 +103,8 @@ def create_similarity_graph(artist_audio_features_df: pd.DataFrame, similarity: 
 if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
     # Get undirected graphs of gB and gD
-    gb = nx.read_gml("./graphs/gB")
-    gd = nx.read_gml("./graphs/gD")
+    gb = nx.read_graphml("./graphs/gB")
+    gd = nx.read_graphml("./graphs/gD")
     gb2 = retrieve_bidirectional_edges(gb)
     gd2 = retrieve_bidirectional_edges(gd)
 
