@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-def plot_graph(g, title):
+def plot_graph(g, file_path):
     """
     Visualize the graph with artists' names.
 
@@ -16,13 +16,16 @@ def plot_graph(g, title):
     plt.figure(figsize=(20, 16))
     nx.draw(g, pos, labels=labels, with_labels=True, node_color='lightblue', 
             edge_color='gray', node_size=200, font_size=8, font_weight='bold')
-    plt.title(title)
-    plt.show()
+    # Store the plot in png
+    plt.savefig(file_path, format='png', bbox_inches='tight')
+    #plt.show()
 
 import networkx as nx
 import matplotlib.pyplot as plt
 
 # Retrieve graph
 gb = nx.read_graphml("./graphs/gB")
+gb_bidir = nx.read_graphml("./graphs/gB_bidir")
 # Plot
-plot_graph(gb, "Taylor Swift BFS graph")
+plot_graph(gb, "./graphs/png_gB.png")
+plot_graph(gb_bidir, "./graphs/png_gB_bidir.png")

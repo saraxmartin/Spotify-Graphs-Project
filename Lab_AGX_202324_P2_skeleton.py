@@ -17,7 +17,6 @@ def retrieve_bidirectional_edges(g: nx.DiGraph, out_filename: str) -> nx.Graph:
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
     #Idea: 1. Get all edges in graph and check which are undirected.
     #      2. Delete those edges that aren't undirected.
-    print()
     g_undirected = g.to_undirected()
     nx.write_graphml(g_undirected, out_filename)
     return g_undirected
@@ -104,13 +103,13 @@ if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
     # Get undirected graphs of gB and gD
     gb = nx.read_graphml("./graphs/gB")
-    gd = nx.read_graphml("./graphs/gD")
-    gb2 = retrieve_bidirectional_edges(gb)
-    gd2 = retrieve_bidirectional_edges(gd)
+    #gd = nx.read_graphml("./graphs/gD")
+    gb2 = retrieve_bidirectional_edges(gb, "./graphs/gB_bidir")
+    #gd2 = retrieve_bidirectional_edges(gd, "./graphs/gD_bidir")
 
     # Get undirected graph gw
-    songs_df = pd.read_csv("songs.csv")
-    mean_audio_features_df = compute_mean_audio_features(songs_df)
-    gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
+    #songs_df = pd.read_csv("songs.csv")
+    #mean_audio_features_df = compute_mean_audio_features(songs_df)
+    #gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
     
     # ------------------- END OF MAIN ------------------------ #

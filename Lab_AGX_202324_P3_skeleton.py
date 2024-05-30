@@ -1,11 +1,13 @@
 import networkx as nx
+from networkx.algorithms.community import girvan_newman
+import community as community_louvain
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
-def num_common_nodes(list_graphs):
+def num_common_nodes(list_graphs: list) -> int:
     """
     Return the number of common nodes between a set of graphs.
 
@@ -85,11 +87,62 @@ def detect_communities(g: nx.Graph, method: str) -> tuple:
     :return: two-element tuple, list of communities (each community is a list of nodes) and modularity of the partition.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    if method == 'girvan-newman':
+        comp = girvan_newman(g)
+        # Get the first partition (after the first removal of edges)
+        communities = next(comp)
+        # Convert to a list of lists
+        communities = [list(c) for c in communities]
+        # Calculate modularity
+        modularity = nx.algorithms.community.quality.modularity(g, communities)
+    
+    elif method == 'louvain':
+        partition = community_louvain.best_partition(g)
+        # Convert partition dictionary to list of lists
+        communities = {}
+        for node, community in partition.items():
+            communities.setdefault(community, []).append(node)
+        communities = list(communities.values())
+        # Calculate modularity
+        modularity = community_louvain.modularity(partition, g)
+    
+    else:
+        raise ValueError("Method must be 'girvan-newman' or 'louvain'")
+
+    return communities, modularity
+
     # ----------------- END OF FUNCTION --------------------- #
 
 
 if __name__ == '__main__':
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
-    pass
+    #! pip install python-louvain
+
+    gb = nx.read_graphml("./graphs/gB")
+    gb2 = nx.read_graphml("./graphs/gB_bidir")
+
+    # Common nodes
+    print("Number of nodes of gB: ", len(gb.nodes))
+    print("Number of nodes of gB bidir: ", len(gb2.nodes))
+    n_common_nodes = num_common_nodes([gb,gb2])
+    print("Number of common nodes of gb and gB bidir: ", n_common_nodes)
+
+    # Degree distribution
+    degree_distribution_gb = get_degree_distribution(gb)
+    print("Degree distribution of gB: ", degree_distribution_gb)
+    degree_distribution_gb2 = get_degree_distribution(gb2)
+    print("Degree distribution of gB bidir: ", degree_distribution_gb2)
+
+    # K most central node
+    # ...
+
+    # Find cliques 
+    # ...
+
+    # Detect communities
+    communities_gb, modularity_gb = detect_communities(gb2, method='girvan-newman')
+    print(f"Number of communities with Girvan-Newman: {len(communities_gb)}. Modularity: {modularity_gb}")
+    communities_gb2, modularity_gb2 = detect_communities(gb2, method='louvain')
+    print(f"Number of communities with Louvain: {len(communities_gb2)}. Modularity: {modularity_gb2}")
+
     # ------------------- END OF MAIN ------------------------ #
