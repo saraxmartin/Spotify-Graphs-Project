@@ -1,9 +1,20 @@
 import networkx as nx
 from networkx.algorithms.community import girvan_newman
 import community as community_louvain
+import csv
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 
+def save_dict_to_csv(dictionary: dict, filename:str):
+    """
+    Save dictionary to a CSV file.
+    :param: dictionary
+    :param: filename (str)
+    """
+    with open(filename, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        for key, value in dictionary.items():
+            writer.writerow([key, value])
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
@@ -29,7 +40,7 @@ def num_common_nodes(list_graphs: list) -> int:
     # ----------------- END OF FUNCTION --------------------- #
 
 
-def get_degree_distribution(g: nx.Graph) -> dict:
+def get_degree_distribution(g: nx.Graph, filename:str) -> dict:
     """
     Get the degree distribution of the graph.
 
@@ -44,6 +55,9 @@ def get_degree_distribution(g: nx.Graph) -> dict:
             degree_distribution[degree] = 1
         else:
             degree_distribution[degree] += 1
+
+    # Save dictionary to CSV for future use
+    save_dict_to_csv(degree_distribution, filename)
     
     return degree_distribution
 
@@ -134,19 +148,28 @@ if __name__ == '__main__':
     #! pip install python-louvain
 
     gb = nx.read_graphml("./graphs/gB")
+    gd = nx.read_graphml("./graphs/gD")
     gb2 = nx.read_graphml("./graphs/gB_bidir")
+    gd2 = nx.read_graphml("./graphs/gD_bidir")
 
     # Common nodes
     print("Number of nodes of gB: ", len(gb.nodes))
     print("Number of nodes of gB bidir: ", len(gb2.nodes))
-    n_common_nodes = num_common_nodes([gb,gb2])
-    print("Number of common nodes of gb and gB bidir: ", n_common_nodes)
+    print("Number of nodes if gD: ", len(gd.nodes))
+    print("Number of nodes of gD bidir: ", len(gd2.nodes))
+
+    n_common_nodes = num_common_nodes([gb,gd])
+    print("Number of common nodes of gB and gD bidir: ", n_common_nodes)
 
     # Degree distribution
-    degree_distribution_gb = get_degree_distribution(gb)
+    degree_distribution_gb = get_degree_distribution(gb, filename="./degree_distribution/dict_gb.csv")
     print("Degree distribution of gB: ", degree_distribution_gb)
-    degree_distribution_gb2 = get_degree_distribution(gb2)
+    degree_distribution_gb2 = get_degree_distribution(gb2, filename="./degree_distribution/dict_gb_bidir.csv")
     print("Degree distribution of gB bidir: ", degree_distribution_gb2)
+    degree_distribution_gd = get_degree_distribution(gd, filename="./degree_distribution/dict_gd.csv")
+    print("Degree distribution of gD: ", degree_distribution_gd)
+    degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gd_bidir.csv")
+    print("Degree distribution of gD bidir: ", degree_distribution_gb2)
 
     # K most central node
     # ...
