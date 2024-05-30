@@ -1,6 +1,6 @@
 import statistics
 import networkx as nx
-
+import pandas as pd
 # ----------------- PART 1 --------------------- #
 
 def dataset_info(df):
@@ -45,8 +45,24 @@ def graph_info(G):
 
 
 # ----------------- PART 2 --------------------- #
+def analyze_graph_components(graph, name):
+    """
+    Analyze the weakly connected components and strongly connected components of a directed graph.
 
-
+    :param graph: A networkx DiGraph (directed graph).
+    :return: Number of weakly connected components and strongly connected components.
+    """
+    # Calculate weakly connected components
+    wcc = list(nx.weakly_connected_components(graph))
+    num_wcc = len(wcc)
+    {}
+    # Calculate strongly connected components
+    scc = list(nx.strongly_connected_components(graph))
+    num_scc = len(scc)
+    
+    print(f"{name}: Num weak connected components: ",num_wcc)
+    print(f"{name}: Num strong connected components: ",num_scc)
+    
 
 # ----------------- PART 3 --------------------- #
 
@@ -62,12 +78,23 @@ def graph_info(G):
 # ------------ ANSWER QUESTIONS------------------ #
 if __name__ == "__main__":
 
-    # Import graphs
+    # Import graphs and datasets
     gb = nx.read_graphml("./graphs/gB")
     gd = nx.read_graphml("./graphs/gD")
+    #songs = pd.read_csv("./songs.csv")
 
     # PART 1: DATA ADQUISITION
+    print("#-------------PART 1-----------------#\n")
     print("#----------Info about GB:------------#\n")
     graph_info(gb)
     print("\n#----------Info about GD:------------#")
     graph_info(gd)
+
+    print("\n#----------Info about songs:-----------#")
+    # datase_info(songs)
+
+    # PART 2: DATA ADQUISITION
+    print("\n#-------------PART 2-----------------#\n")
+    analyze_graph_components(gb, "gb")
+    analyze_graph_components(gd, "gd")
+

@@ -149,8 +149,8 @@ if __name__ == '__main__':
 
     gb = nx.read_graphml("./graphs/gB")
     gd = nx.read_graphml("./graphs/gD")
-    gb2 = nx.read_graphml("./graphs/gB_bidir")
-    gd2 = nx.read_graphml("./graphs/gD_bidir")
+    gb2 = nx.read_graphml("./graphs/gBp")
+    gd2 = nx.read_graphml("./graphs/gDp")
 
     # Common nodes
     print("Number of nodes of gB: ", len(gb.nodes))
@@ -164,11 +164,11 @@ if __name__ == '__main__':
     # Degree distribution
     degree_distribution_gb = get_degree_distribution(gb, filename="./degree_distribution/dict_gb.csv")
     print("Degree distribution of gB: ", degree_distribution_gb)
-    degree_distribution_gb2 = get_degree_distribution(gb2, filename="./degree_distribution/dict_gb_bidir.csv")
+    degree_distribution_gb2 = get_degree_distribution(gb2, filename="./degree_distribution/dict_gbp.csv")
     print("Degree distribution of gB bidir: ", degree_distribution_gb2)
     degree_distribution_gd = get_degree_distribution(gd, filename="./degree_distribution/dict_gd.csv")
     print("Degree distribution of gD: ", degree_distribution_gd)
-    degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gd_bidir.csv")
+    degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gdp.csv")
     print("Degree distribution of gD bidir: ", degree_distribution_gb2)
 
     # K most central node
