@@ -1,5 +1,6 @@
 import networkx as nx
 import pandas as pd
+from numpy import np
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
@@ -74,9 +75,9 @@ def prune_low_weight_edges(g: nx.Graph, min_weight=None, min_percentile=None, ou
     elif min_weight is not None and min_percentile is not None:
       raise ValueError("Only one of the parameters [min_weight, min_percentile] should be specified")
 
-    edge_weights = [data['weight'] for u, v, data in G.edges(data=True)]
+    edge_weights = [data['weight'] for u, v, data in g.edges(data=True)]
 
-    for u, v, data in G.edges(data=True):
+    for u, v, data in g.edges(data=True):
       weight = data.get('weight', None)
 
       if min_weight is not None:
@@ -89,7 +90,7 @@ def prune_low_weight_edges(g: nx.Graph, min_weight=None, min_percentile=None, ou
           g.remove_edge(u,v)
 
     # Remove zero-degree nodes
-    zero_degree_nodes = [node for node, degree in dict(G.degree()).items() if degree == 0]
+    zero_degree_nodes = [node for node, degree in dict(g.degree()).items() if degree == 0]
     g.remove_nodes_from(zero_degree_nodes)
 
     nx.write_graphml(g, out_filename)

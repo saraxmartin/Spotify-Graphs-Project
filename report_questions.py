@@ -1,5 +1,8 @@
 import statistics
 
+
+# ----------------- PART 1 --------------------- #
+
 def dataset_info(df):
   num_songs = len(df)
   num_artists = df['artist_id'].nunique()
@@ -40,3 +43,15 @@ def graph_info(G):
   print("Out-degrees:", sorted(out_degrees))
 
   return
+
+
+# ----------------- PART 2 --------------------- #
+
+
+
+# ----------------- PART 3 --------------------- #
+
+
+
+
+# ----------------- PART 4 --------------------- #
