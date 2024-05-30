@@ -1,6 +1,6 @@
 import networkx as nx
 import pandas as pd
-from numpy import np
+import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
@@ -17,10 +17,17 @@ def retrieve_bidirectional_edges(g: nx.DiGraph, out_filename: str) -> nx.Graph:
     :return: a networkx undirected graph.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    #Idea: 1. Get all edges in graph and check which are undirected.
-    #      2. Delete those edges that aren't undirected.
-    g_undirected = g.to_undirected()
+    g_undirected = nx.Graph()
+
+    for node, attrs in g.nodes(data=True):
+        g_undirected.add_node(node, **attrs)
+
+    for u,v in g.edges():
+      if g.has_edge(v,u):
+         g_undirected.add_edge(u,v)
+
     nx.write_graphml(g_undirected, out_filename)
+
     return g_undirected
     # ----------------- END OF FUNCTION --------------------- #
 
@@ -156,7 +163,7 @@ if __name__ == "__main__":
     # Get undirected graphs of gB and gD
     gb = nx.read_graphml("./graphs/gB")
     gd = nx.read_graphml("./graphs/gD")
-    #gb2 = retrieve_bidirectional_edges(gb, "./graphs/gB_bidir")
+    gb2 = retrieve_bidirectional_edges(gb, "./graphs/gB_bidir")
     gd2 = retrieve_bidirectional_edges(gd, "./graphs/gD_bidir")
 
     # Get undirected graph gw
