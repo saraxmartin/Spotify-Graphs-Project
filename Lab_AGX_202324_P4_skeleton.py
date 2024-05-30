@@ -1,11 +1,25 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import csv
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
-
+def load_dict_from_csv(filename:str) -> dict:
+    """
+    Load dictionary from csv.
+    :param: filename (str) where the dictionary is stored
+    :returns: dictionary retrieved.
+    """
+    dictionary = {}
+    with open(filename, 'r') as csv_file:
+        reader = csv.reader(csv_file)
+        for row in reader:
+            key, value = int(row[0]), int(row[1])
+            dictionary[key] = value
+    return dictionary
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
-def plot_degree_distribution(degree_dict: dict, normalized: bool = False, loglog: bool = False) -> None:
+def plot_degree_distribution(degree_dict: dict, filename:str, normalized: bool = False, loglog: bool = False) -> None:
     """
     Plot degree distribution from dictionary of degree counts.
 
@@ -14,7 +28,35 @@ def plot_degree_distribution(degree_dict: dict, normalized: bool = False, loglog
     :param loglog: boolean indicating whether to plot in log-log scale.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    # Extract degrees and their counts
+    degrees = list(degree_dict.keys())
+    counts = list(degree_dict.values())
+    
+    if normalized:
+        total_counts = sum(counts)
+        probabilities = [count / total_counts for count in counts]
+        y_values = probabilities
+        ylabel = 'Probability'
+    else:
+        y_values = counts
+        ylabel = 'Count'
+    
+    plt.figure(figsize=(10, 6))
+    if loglog:
+        plt.loglog(degrees, y_values, 'bo')
+        plt.xlabel('Degree (log scale)')
+        plt.ylabel(f'{ylabel} (log scale)')
+        plt.title('Degree Distribution (log-log scale)')
+    else:
+        plt.plot(degrees, y_values, 'bo')
+        plt.xlabel('Degree')
+        plt.ylabel(ylabel)
+        plt.title('Degree Distribution')
+    
+    plt.grid(True, which="both", ls="--")
+    plt.savefig(filename, format='png', bbox_inches='tight')
+    plt.show()
+
     # ----------------- END OF FUNCTION --------------------- #
 
 
@@ -47,5 +89,8 @@ def plot_similarity_heatmap(artist_audio_features_df: pd.DataFrame, similarity: 
 
 if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
-    pass
+    # Retrieve dictionary
+    dict_gb = load_dict_from_csv("./graphs/dict_gb.csv")
+    plot_degree_distribution(dict_gb, filename="./degree_distribution/degree_distr_gb1.png")
+    plot_degree_distribution(dict_gb, filename="./degree_distribution/degree_distr_gb2.png", normalized=True, loglog=True)
     # ------------------- END OF MAIN ------------------------ #
