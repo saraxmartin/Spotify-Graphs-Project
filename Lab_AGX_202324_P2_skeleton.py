@@ -115,6 +115,7 @@ def compute_mean_audio_features(tracks_df: pd.DataFrame) -> pd.DataFrame:
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
     mean_df = tracks_df.loc[:,['artist_name','artist_id','duration','popularity','danceability','acousticness','energy','instrumentalness','liveness','loudness','speechiness','tempo','valence']]
     mean_df = mean_df.groupby(['artist_name','artist_id']).mean()
+    mean_df = mean_df.reset_index()
     return mean_df
     # ----------------- END OF FUNCTION --------------------- #
 
@@ -168,6 +169,7 @@ if __name__ == "__main__":
     # Get undirected graph gw
     #songs_df = pd.read_csv("songs.csv")
     #mean_audio_features_df = compute_mean_audio_features(songs_df)
+    #mean_audio_features_df.to_csv("mean_audio_features", index=False)
     #gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
     
     # ------------------- END OF MAIN ------------------------ #

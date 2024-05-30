@@ -172,13 +172,16 @@ def get_track_data(sp: spotipy.client.Spotify, graphs: list, out_filename: str) 
 
     for graph in graphs:
       artists.extend(list(graph.nodes()))
+      print('extending graph...')
 
     for art_id in artists:
+      print(art_id)
       artist = sp.artist(art_id)['name']
+      print(artist)
       top_tracks = sp.artist_top_tracks(art_id, country='ES')['tracks']
       track_ids = [track['id'] for track in top_tracks]
       audio_features = sp.audio_features(track_ids)
-
+      
       for track, feat in zip(top_tracks, audio_features):
         song_name.append(track['name'])
         song_id.append(track['id'])
@@ -235,10 +238,14 @@ if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
 
     # Get Spotify client object
-    #CLIENT_ID = "59435f3767f5407395e8a21c91f1b719"
-    CLIENT_ID = "1bc3dfa825e14b1c9e79c0a5ad59d3d8"
-    #CLIENT_SECRET = "aa930752eeeb4e1ab36bd7bfff2cd0ff"
-    CLIENT_SECRET = "f3b8b67e5ce74c199b0292e40750fe58"
+    # CLIENT_ID = "59435f3767f5407395e8a21c91f1b719"
+    # CLIENT_ID = "1bc3dfa825e14b1c9e79c0a5ad59d3d8"
+    CLIENT_ID = "c2530bbdac80448191d16672a06e625e" # amelia new
+    
+    # CLIENT_SECRET = "aa930752eeeb4e1ab36bd7bfff2cd0ff"
+    # CLIENT_SECRET = "f3b8b67e5ce74c199b0292e40750fe58"
+    CLIENT_SECRET = "b395386b3d894efc98819a4c9f6e3a7c"
+
     auth_manager = SpotifyClientCredentials (client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
     sp = spotipy.Spotify(auth_manager=auth_manager)
 
@@ -250,11 +257,11 @@ if __name__ == "__main__":
     #visualize_graph(gb, title="BFS Taylor Swift graph")
 
     # Create and visualize the DFS graph
-    # gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
-    # visualize_graph(gd, title="DFS Taylor Swift graph")
+    gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
+    visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    #D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
+    # D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
     # D = get_track_data(sp, graphs=[gd], out_filename="gB_TaylorSwift")
 
     # Create BFS graph for Pastel Ghost
