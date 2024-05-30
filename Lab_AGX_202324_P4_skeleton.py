@@ -19,7 +19,7 @@ def load_dict_from_csv(filename:str) -> dict:
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
-def plot_degree_distribution(degree_dict: dict, filename:str, normalized: bool = False, loglog: bool = False) -> None:
+def plot_degree_distribution(degree_dict: dict, title:str, filename:str, normalized: bool = False, loglog: bool = False) -> None:
     """
     Plot degree distribution from dictionary of degree counts.
 
@@ -46,12 +46,12 @@ def plot_degree_distribution(degree_dict: dict, filename:str, normalized: bool =
         plt.loglog(degrees, y_values, 'bo')
         plt.xlabel('Degree (log scale)')
         plt.ylabel(f'{ylabel} (log scale)')
-        plt.title('Degree Distribution (log-log scale)')
+        plt.title(f'Degree Distribution {title} (log-log scale)')
     else:
         plt.plot(degrees, y_values, 'bo')
         plt.xlabel('Degree')
         plt.ylabel(ylabel)
-        plt.title('Degree Distribution')
+        plt.title(f'Degree Distribution {title}')
     
     plt.grid(True, which="both", ls="--")
     plt.savefig(filename, format='png', bbox_inches='tight')
@@ -89,8 +89,22 @@ def plot_similarity_heatmap(artist_audio_features_df: pd.DataFrame, similarity: 
 
 if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
-    # Retrieve dictionary
-    dict_gb = load_dict_from_csv("./graphs/dict_gb.csv")
-    plot_degree_distribution(dict_gb, filename="./degree_distribution/degree_distr_gb1.png")
-    plot_degree_distribution(dict_gb, filename="./degree_distribution/degree_distr_gb2.png", normalized=True, loglog=True)
+    # Plot degree distribution
+    dict_gb = load_dict_from_csv("./degree_distribution/dict_gb.csv")
+    plot_degree_distribution(dict_gb, title= "GB", filename="./degree_distribution/degree_distr_gb1.png")
+    plot_degree_distribution(dict_gb, title= "GB", filename="./degree_distribution/degree_distr_gb2.png", normalized=True, loglog=True)
+    dict_gb_bidir = load_dict_from_csv("./degree_distribution/dict_gb_bidir.csv")
+    plot_degree_distribution(dict_gb, title= "GB bidir", filename="./degree_distribution/degree_distr_gb_bidir1.png")
+    plot_degree_distribution(dict_gb, title= "GB bidir", filename="./degree_distribution/degree_distr_gb_bidir2.png", normalized=True, loglog=True)
+    dict_gd = load_dict_from_csv("./degree_distribution/dict_gd.csv")
+    plot_degree_distribution(dict_gd, title= "GD", filename="./degree_distribution/degree_distr_gd1.png")
+    plot_degree_distribution(dict_gd, title= "GD", filename="./degree_distribution/degree_distr_gd2.png", normalized=True, loglog=True)
+    dict_gd_bidir = load_dict_from_csv("./degree_distribution/dict_gd_bidir.csv")
+    plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gd_bidir1.png")
+    plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gd_bidir2.png", normalized=True, loglog=True)
+    
+    # Plot audio features
+    # ...
+    # Plot similarity measure
+    # ...
     # ------------------- END OF MAIN ------------------------ #
