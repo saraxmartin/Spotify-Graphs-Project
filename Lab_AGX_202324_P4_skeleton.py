@@ -60,7 +60,7 @@ def plot_degree_distribution(degree_dict: dict, title:str, filename:str, normali
     # ----------------- END OF FUNCTION --------------------- #
 
 
-def plot_audio_features(artists_audio_feat: pd.DataFrame, artist1_id: str, artist2_id: str) -> None:
+def plot_audio_features(artists_audio_feat: pd.DataFrame, artist1_id: str, artist2_id: str, filename:str) -> None:
     """
     Plot a (single) figure with a plot of mean audio features of two different artists.
 
@@ -100,7 +100,7 @@ def plot_audio_features(artists_audio_feat: pd.DataFrame, artist1_id: str, artis
     ax.legend()
     ax.grid(True)
 
-    plt.savefig('audio_features_comparison.png')
+    plt.savefig(filename, format='png', bbox_inches='tight')
 
     plt.tight_layout()
     plt.show()
@@ -137,7 +137,8 @@ if __name__ == "__main__":
     plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gd_bidir2.png", normalized=True, loglog=True)
     
     # Plot audio features
-    # ...
+    #dict_mean_audio_feat = load_dict_from_csv("./degree_distribution/mean_audio_feat.csv")
+    #plot_audio_features(dict_mean_audio_feat, artist1_id, artist2_id, "mean_audio_feat_Artist1_artist2")
     # Plot similarity measure
     # ...
     # ------------------- END OF MAIN ------------------------ #
