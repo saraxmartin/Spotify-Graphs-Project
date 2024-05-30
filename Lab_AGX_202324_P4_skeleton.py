@@ -28,7 +28,40 @@ def plot_audio_features(artists_audio_feat: pd.DataFrame, artist1_id: str, artis
     :return: None
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    feat1 = artists_audio_feat[artists_audio_feat['artist_id']==artist1_id]
+    feat2 = artists_audio_feat[artists_audio_feat['artist_id']==artist2_id]
+
+    # Ensure we have only one row per artist
+    feat1 = feat1.iloc[0]
+    feat2 = feat2.iloc[0]
+
+    name1 = feat1['artist_name']
+    name2 = feat2['artist_name']
+
+    # Drop the 'artist_id' and 'artist_name' columns for plotting
+    feat1 = feat1.drop(['artist_id', 'artist_name'])
+    feat2 = feat2.drop(['artist_id', 'artist_name'])
+
+    # Plotting
+    fig, ax = plt.subplots(figsize=(12, 8))
+    indices = range(len(feat1.index))
+    bar_width = 0.35
+    bars1 = ax.bar(indices, feat1.values, bar_width, label=name1, alpha=0.7, color='blue')
+    bars2 = ax.bar([i + bar_width for i in indices], feat2.values, bar_width, label=name2, alpha=0.7, color='orange')
+
+    # Adding labels, title, and legend
+    ax.set_xlabel('Features')
+    ax.set_ylabel('Values')
+    ax.set_title('Audio Features Comparison')
+    ax.set_xticks([i + bar_width / 2 for i in indices])
+    ax.set_xticklabels(feat1.index, rotation=45)
+    ax.legend()
+    ax.grid(True)
+
+    plt.savefig('audio_features_comparison.png')
+
+    plt.tight_layout()
+    plt.show()
     # ----------------- END OF FUNCTION --------------------- #
 
 
