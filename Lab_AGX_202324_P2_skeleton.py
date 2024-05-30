@@ -1,5 +1,6 @@
 import networkx as nx
 import pandas as pd
+from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 
@@ -68,9 +69,33 @@ def prune_low_weight_edges(g: nx.Graph, min_weight=None, min_percentile=None, ou
     :return: a pruned networkx graph.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
-    # ----------------- END OF FUNCTION --------------------- #
+    if min_weight==None and min_percentile==None:
+      raise ValueError("One of the parameters [min_weight, min_percentile] should be specified")
+    elif min_weight is not None and min_percentile is not None:
+      raise ValueError("Only one of the parameters [min_weight, min_percentile] should be specified")
 
+    edge_weights = [data['weight'] for u, v, data in G.edges(data=True)]
+
+    for u, v, data in G.edges(data=True):
+      weight = data.get('weight', None)
+
+      if min_weight is not None:
+        if weight < min_weight:
+          g.remove_edge(u,v)
+
+      elif min_percentile is not None:
+        weight_percentile = np.percentile(edge_weights, min_percentile)
+        if weight < weight_percentile:
+          g.remove_edge(u,v)
+
+    # Remove zero-degree nodes
+    zero_degree_nodes = [node for node, degree in dict(G.degree()).items() if degree == 0]
+    g.remove_nodes_from(zero_degree_nodes)
+
+    nx.write_graphml(g, out_filename)
+
+    return g
+    # ----------------- END OF FUNCTION --------------------- #
 
 def compute_mean_audio_features(tracks_df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -80,12 +105,13 @@ def compute_mean_audio_features(tracks_df: pd.DataFrame) -> pd.DataFrame:
     :return: artist dataframe (with mean audio features per each artist).
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    mean_df = tracks_df.loc[:,['artist_name','artist_id','duration','popularity','danceability','acousticness','energy','instrumentalness','liveness','loudness','speechiness','tempo','valence']]
+    mean_df = mean_df.groupby(['artist_name','artist_id']).mean()
+    return mean_df
     # ----------------- END OF FUNCTION --------------------- #
 
 
-def create_similarity_graph(artist_audio_features_df: pd.DataFrame, similarity: str, out_filename: str = None) -> \
-        nx.Graph:
+def create_similarity_graph(artist_audio_features_df: pd.DataFrame, similarity: str, out_filename: str = None) -> nx.Graph:
     """
     Create a similarity graph from a dataframe with mean audio features per artist.
 
@@ -95,7 +121,31 @@ def create_similarity_graph(artist_audio_features_df: pd.DataFrame, similarity: 
     :return: a networkx graph with the similarity between artists as edge weights.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    G = nx.Graph()
+
+    # Create all nodes
+    for i in range(len(artist_audio_features_df)):
+      artist = artist_audio_features_df.iloc[i]
+      if not G.has_node(artist['artist_id']):
+        G.add_node(artist['artist_id'], name = artist['artist_name'])
+
+    # Create edges
+    for i in range(len(artist_audio_features_df)):
+      artist = np.array(artist_audio_features_df.iloc[i,2:])
+
+      for j in range(i+1, len(artist_audio_features_df)):
+        artist2 = np.array(artist_audio_features_df.iloc[j,2:])
+        if similarity=='cosine':
+          sim = cosine_similarity(artist,artist2)
+        elif similarity=='euclidean':
+          dist = euclidean_distances(artist,artist2)
+          sim = 1 / (1 + dist)
+
+        G.add_edge(artist, artist2, weight=sim)
+
+    nx.write_graphml(G, out_filename)
+
+    return G
     # ----------------- END OF FUNCTION --------------------- #
 
 
