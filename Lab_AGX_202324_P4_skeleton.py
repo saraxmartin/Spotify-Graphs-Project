@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import csv
+from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
+import seaborn as sns
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 def load_dict_from_csv(filename:str) -> dict:
@@ -116,7 +118,27 @@ def plot_similarity_heatmap(artist_audio_features_df: pd.DataFrame, similarity: 
     :param out_filename: name of the file to save the plot. If None, the plot is not saved.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    artist_names = artist_audio_features_df['artist_name']
+    artist_audio_features_df.set_index('artist_id', inplace=True)
+    artist_audio_features_df = artist_audio_features_df.drop(['artist_name'], axis=1)
+
+    if similarity=="cosine":
+        sim_matrix = cosine_similarity(artist_audio_features_df)
+    else:
+        euclidean_dist_matrix = euclidean_distances(artist_audio_features_df)
+        # Convert Euclidean distances to similarity scores
+        sim_matrix = 1 / (1 + euclidean_dist_matrix)
+
+    # Plot heatmap
+    plt.figure(figsize=(10, 8))
+    heatmap = sns.heatmap(sim_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+    heatmap.set_xticklabels(artist_names, rotation=45)
+    heatmap.set_yticklabels(artist_names, rotation=0)
+
+    plt.title('Correlation Heatmap of Audio Features')
+    plt.xlabel('Audio Features')
+    plt.ylabel('Audio Features')
+    plt.show()
     # ----------------- END OF FUNCTION --------------------- #
 
 
