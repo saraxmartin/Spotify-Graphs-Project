@@ -174,14 +174,16 @@ def get_track_data(sp: spotipy.client.Spotify, graphs: list, out_filename: str) 
       artists.extend(list(graph.nodes()))
 
     for art_id in artists:
-      for track in sp.artist_top_tracks(art_id, country='ES')['tracks']:
-        artist = sp.artist(art_id)['name']
-        track_id = track['id']
+      artist = sp.artist(art_id)['name']
+      top_tracks = sp.artist_top_tracks(art_id, country='ES')['tracks']
+      track_ids = [track['id'] for track in top_tracks]
+      audio_features = sp.audio_features(track_ids)
+
+      for track, feat in zip(top_tracks, audio_features):
         song_name.append(track['name'])
-        song_id.append(track_id)
+        song_id.append(track['id'])
         popularity.append(track['popularity'])
 
-        feat = sp.audio_features(track_id)[0]
         song_duration.append(feat['duration_ms'])
         acoustic.append(feat['acousticness'])
         dance.append(feat['danceability'])
@@ -199,6 +201,7 @@ def get_track_data(sp: spotipy.client.Spotify, graphs: list, out_filename: str) 
 
         artist_name.append(artist)
         artist_id.append(art_id)
+
 
     df = pd.DataFrame({'song_name':song_name,
                       'song_id':song_id,
@@ -252,6 +255,7 @@ if __name__ == "__main__":
 
     # Obtain dataset of songs from artists of previous graphs
     #D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
+    # D = get_track_data(sp, graphs=[gd], out_filename="gB_TaylorSwift")
 
     # Create BFS graph for Pastel Ghost
     #seed = search_artist(sp,"Pastel Ghost")

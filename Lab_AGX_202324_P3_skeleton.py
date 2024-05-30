@@ -60,7 +60,19 @@ def get_k_most_central(g: nx.Graph, metric: str, num_nodes: int) -> list:
     :return: list with the top num_nodes nodes.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    if metric=='degree':
+      centrality = nx.degree_centrality(g)
+    elif metric=='betweenness':
+      centrality = nx.betweenness_centrality(g)
+    elif metric=='closeness':
+      centrality = nx.closeness_centrality(g)
+    elif metric=='eigenvector':
+      centrality = nx.eigenvector_centrality(g)
+
+    sorted_nodes = sorted(centrality, key=centrality.get, reverse=True)
+    top_k_nodes = sorted_nodes[:num_nodes]
+
+    return top_k_nodes
     # ----------------- END OF FUNCTION --------------------- #
 
 
@@ -74,7 +86,10 @@ def find_cliques(g: nx.Graph, min_size_clique: int) -> tuple:
         list of nodes in any of the cliques.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    pass
+    cliques = [clique for clique in nx.enumerate_all_cliques(g) if len(clique) >= min_size_clique]
+    nodes = list({node for clique in cliques for node in clique})
+
+    return (cliques,nodes)
     # ----------------- END OF FUNCTION --------------------- #
 
 
