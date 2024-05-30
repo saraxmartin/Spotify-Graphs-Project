@@ -103,9 +103,9 @@ if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
     # Get undirected graphs of gB and gD
     gb = nx.read_graphml("./graphs/gB")
-    #gd = nx.read_graphml("./graphs/gD")
-    gb2 = retrieve_bidirectional_edges(gb, "./graphs/gB_bidir")
-    #gd2 = retrieve_bidirectional_edges(gd, "./graphs/gD_bidir")
+    gd = nx.read_graphml("./graphs/gD")
+    #gb2 = retrieve_bidirectional_edges(gb, "./graphs/gB_bidir")
+    gd2 = retrieve_bidirectional_edges(gd, "./graphs/gD_bidir")
 
     # Get undirected graph gw
     #songs_df = pd.read_csv("songs.csv")
