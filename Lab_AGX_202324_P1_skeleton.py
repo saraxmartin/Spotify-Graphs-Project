@@ -257,11 +257,13 @@ if __name__ == "__main__":
     #visualize_graph(gb, title="BFS Taylor Swift graph")
 
     # Create and visualize the DFS graph
-    gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
-    visualize_graph(gd, title="DFS Taylor Swift graph")
+    #gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
+    #visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    # D = get_track_data(sp, graphs=[gb,gd], out_filename="gB_TaylorSwift")
+    gb = nx.read_graphml("./graphs/gB")
+    gd = nx.read_graphml("./graphs/gD")
+    D = get_track_data(sp, graphs=[gb,gd], out_filename="songs")
     # D = get_track_data(sp, graphs=[gd], out_filename="gB_TaylorSwift")
 
     # Create BFS graph for Pastel Ghost

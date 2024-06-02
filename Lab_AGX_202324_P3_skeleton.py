@@ -16,6 +16,48 @@ def save_dict_to_csv(dictionary: dict, filename:str):
         for key, value in dictionary.items():
             writer.writerow([key, value])
 
+def find_cliques_question(graph):
+    """
+    Find cliques of size greater than or equal to the minimum size clique in the graph.
+
+    :param graph: A networkx Graph.
+    :return: Total number of different nodes that are part of all cliques.
+    """
+    # Find the minimum size clique that generates at least 2 cliques
+    min_size_clique = 1
+    while True:
+        cliques = list(nx.find_cliques(graph))
+        if len(cliques) >= 2:
+            break
+        min_size_clique += 1
+
+    # Count the number of cliques for each size
+    cliques_sizes = {}
+    for clique in cliques:
+        size = len(clique)
+        cliques_sizes[size] = cliques_sizes.get(size, 0) + 1
+
+    # Return the minimum size clique, number of cliques for each size
+    return min_size_clique, cliques_sizes
+
+def analyze_max_size_clique(graph):
+    """
+    Analyze the artists that are part of the clique with the maximum size in the graph.
+
+    :param graph: A networkx Graph.
+    """
+    # Find all cliques in the graph
+    cliques = list(nx.find_cliques(graph))
+
+    # Find the clique with the maximum size
+    max_size_clique = max(cliques, key=len)
+
+    # Analyze the artists in the maximum size clique
+    print("Artists in the maximum size clique:")
+    for artist_id in max_size_clique:
+        artist_name = graph.nodes[artist_id]["name"]
+        print(artist_name)
+
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
 def num_common_nodes(list_graphs: list) -> int:
@@ -151,36 +193,51 @@ if __name__ == '__main__':
     gd = nx.read_graphml("./graphs/gD")
     gb2 = nx.read_graphml("./graphs/gBp")
     gd2 = nx.read_graphml("./graphs/gDp")
+    gb2_prunned = nx.read_graphml("./graphs/gBp_prunned")
+    gd2_prunned = nx.read_graphml("./graphs/gDp_prunned")
 
     # Common nodes
-    print("Number of nodes of gB: ", len(gb.nodes))
+    """print("Number of nodes of gB: ", len(gb.nodes))
     print("Number of nodes of gB bidir: ", len(gb2.nodes))
     print("Number of nodes if gD: ", len(gd.nodes))
     print("Number of nodes of gD bidir: ", len(gd2.nodes))
 
     n_common_nodes = num_common_nodes([gb,gd])
-    print("Number of common nodes of gB and gD bidir: ", n_common_nodes)
+    print("Number of common nodes of gB and gD: ", n_common_nodes)
+    n_common_nodes = num_common_nodes([gb,gb2])
+    print("Number of common nodes of gB and gB bidir: ", n_common_nodes)
+    n_common_nodes = num_common_nodes([gb,gb2_prunned])
+    print("Number of common nodes of gB and gB bidir prunned: ", n_common_nodes)"""
 
     # Degree distribution
-    degree_distribution_gb = get_degree_distribution(gb, filename="./degree_distribution/dict_gb.csv")
+    """degree_distribution_gb = get_degree_distribution(gb, filename="./degree_distribution/dict_gb.csv")
     print("Degree distribution of gB: ", degree_distribution_gb)
     degree_distribution_gb2 = get_degree_distribution(gb2, filename="./degree_distribution/dict_gbp.csv")
     print("Degree distribution of gB bidir: ", degree_distribution_gb2)
     degree_distribution_gd = get_degree_distribution(gd, filename="./degree_distribution/dict_gd.csv")
     print("Degree distribution of gD: ", degree_distribution_gd)
     degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gdp.csv")
-    print("Degree distribution of gD bidir: ", degree_distribution_gb2)
+    print("Degree distribution of gD bidir: ", degree_distribution_gb2)"""
 
     # K most central node
-    # ...
+    top_nodes_d = get_k_most_central(gb2, metric="degree", num_nodes=25)
+    top_nodes_b = get_k_most_central(gb2, metric='betweenness', num_nodes=25)
+    common = set(top_nodes_d).intersection(top_nodes_b)
+    print("Common nodes of 25 top nodes with degree and betweenness centrality: ", len(common))
 
     # Find cliques 
-    # ...
+    min_size_clique, cliques_sizes = find_cliques_question(gb2_prunned)
+    print("Number of cliques per size of gB bidir: ",cliques_sizes)
+    min_size_clique, cliques_sizes = find_cliques_question(gd2_prunned)
+    print("Number of cliques per size of gD bidir: ",cliques_sizes)
+
+    analyze_max_size_clique(gb2)
+    analyze_max_size_clique(gd2)
 
     # Detect communities
-    communities_gb, modularity_gb = detect_communities(gb2, method='girvan-newman')
-    print(f"Number of communities with Girvan-Newman: {len(communities_gb)}. Modularity: {modularity_gb}")
-    communities_gb2, modularity_gb2 = detect_communities(gb2, method='louvain')
-    print(f"Number of communities with Louvain: {len(communities_gb2)}. Modularity: {modularity_gb2}")
+    communities_gd, modularity_gd = detect_communities(gd2_prunned, method='girvan-newman')
+    print(f"Number of communities of gD bidir with Girvan-Newman: {len(communities_gd)}. Modularity: {modularity_gd}")
+    communities_gd_l, modularity_gd_l = detect_communities(gd2_prunned, method='louvain')
+    print(f"Number of communities of gD bidir with Louvain: {len(communities_gd_l)}. Modularity: {modularity_gd_l}")
 
     # ------------------- END OF MAIN ------------------------ #

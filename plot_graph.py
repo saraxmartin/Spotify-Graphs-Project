@@ -25,12 +25,17 @@ import matplotlib.pyplot as plt
 
 # Retrieve graph
 gb = nx.read_graphml("./graphs/gB")
-gb_bidir = nx.read_graphml("./graphs/gBp")
+gbp = nx.read_graphml("./graphs/gBp")
 gd = nx.read_graphml("./graphs/gD")
-gd_bidir = nx.read_graphml("./graphs/gDp")
+gdp = nx.read_graphml("./graphs/gDp")
+gbp_prunned = nx.read_graphml("./graphs/gBp_prunned")
+gdp_prunned = nx.read_graphml("./graphs/gDp_prunned")
 # Plot
 #plot_graph(gb, "./graphs/png_gB.png")
-plot_graph(gb_bidir, "./graphs/png_gBp.png")
+#plot_graph(gbp, "./graphs/png_gBp.png")
 #plot_graph(gd, "./graphs/png_gD.png")
-plot_graph(gd_bidir, "./graphs/png_gDp.png")
+#plot_graph(gdp, "./graphs/png_gDp.png")
+plot_graph(gbp_prunned, "./graphs/png_gBp_prunned.png")
+plot_graph(gdp_prunned, "./graphs/png_gDp_prunned.png")
+
 

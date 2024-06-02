@@ -163,8 +163,14 @@ if __name__ == "__main__":
     # Get undirected graphs of gB and gD
     gb = nx.read_graphml("./graphs/gB")
     gd = nx.read_graphml("./graphs/gD")
-    gb2 = retrieve_bidirectional_edges(gb, "./graphs/gBp")
-    gd2 = retrieve_bidirectional_edges(gd, "./graphs/gDp")
+    #gb2 = retrieve_bidirectional_edges(gb, "./graphs/gBp")
+    #gd2 = retrieve_bidirectional_edges(gd, "./graphs/gDp")
+
+    # Prune low degree edges
+    #gb2 = nx.read_graphml("./graphs/gBp")
+    #gb2_prunned = prune_low_degree_nodes(gb2, min_degree=1, out_filename="./graphs/gBp_prunned")
+    #gd2 = nx.read_graphml("./graphs/gDp")
+    #gd2_prunned = prune_low_degree_nodes(gd2, min_degree=1, out_filename="./graphs/gDp_prunned")
 
     # Get undirected graph gw
     #songs_df = pd.read_csv("songs.csv")

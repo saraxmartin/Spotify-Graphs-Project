@@ -47,21 +47,33 @@ def graph_info(G):
 # ----------------- PART 2 --------------------- #
 def analyze_graph_components(graph, name):
     """
-    Analyze the weakly connected components and strongly connected components of a directed graph.
+    Analyze the connected components of a graph, whether directed or undirected.
 
-    :param graph: A networkx DiGraph (directed graph).
-    :return: Number of weakly connected components and strongly connected components.
+    For directed graphs, it analyzes weakly connected components and strongly connected components.
+    For undirected graphs, it analyzes connected components.
+
+    :param graph: A networkx Graph (undirected) or DiGraph (directed).
+    :param name: Name of the graph for printing purposes.
+    :return: None
     """
-    # Calculate weakly connected components
-    wcc = list(nx.weakly_connected_components(graph))
-    num_wcc = len(wcc)
-    {}
-    # Calculate strongly connected components
-    scc = list(nx.strongly_connected_components(graph))
-    num_scc = len(scc)
-    
-    print(f"{name}: Num weak connected components: ",num_wcc)
-    print(f"{name}: Num strong connected components: ",num_scc)
+    if isinstance(graph, nx.DiGraph):
+        # Directed graph: Calculate weakly and strongly connected components
+        wcc = list(nx.weakly_connected_components(graph))
+        num_wcc = len(wcc)
+        
+        scc = list(nx.strongly_connected_components(graph))
+        num_scc = len(scc)
+        
+        print(f"{name}: Num weakly connected components: {num_wcc}")
+        print(f"{name}: Num strongly connected components: {num_scc}")
+    elif isinstance(graph, nx.Graph):
+        # Undirected graph: Calculate connected components
+        cc = list(nx.connected_components(graph))
+        num_cc = len(cc)
+        
+        print(f"{name}: Num connected components: {num_cc}")
+    else:
+        print(f"{name}: Unsupported graph type")
     
 
 # ----------------- PART 3 --------------------- #
@@ -81,7 +93,9 @@ if __name__ == "__main__":
     # Import graphs and datasets
     gb = nx.read_graphml("./graphs/gB")
     gd = nx.read_graphml("./graphs/gD")
-    #songs = pd.read_csv("./songs.csv")
+    gbp = nx.read_graphml("./graphs/gBp")
+    gdp = nx.read_graphml("./graphs/gDp")
+    songs = pd.read_csv("./graphs/songs.csv")
 
     # PART 1: DATA ADQUISITION
     print("#-------------PART 1-----------------#\n")
@@ -95,6 +109,16 @@ if __name__ == "__main__":
 
     # PART 2: DATA ADQUISITION
     print("\n#-------------PART 2-----------------#\n")
+    # 1/2. Strong / weak connected components
     analyze_graph_components(gb, "gb")
     analyze_graph_components(gd, "gd")
+    analyze_graph_components(gbp, "gbp")
+    analyze_graph_components(gdp, "gdp")
+    # ...
+
+    # PART 2: DATA ADQUISITION
+    print("\n#-------------PART 3-----------------#\n")
+    # 1. Used functions in notebook 3.
+    # 2. Used functions in notebook 3.
+
 
