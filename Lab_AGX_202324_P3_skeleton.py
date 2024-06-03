@@ -189,12 +189,14 @@ if __name__ == '__main__':
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
     #! pip install python-louvain
 
+    # Retrieve graphs
     gb = nx.read_graphml("./graphs/gB")
     gd = nx.read_graphml("./graphs/gD")
     gb2 = nx.read_graphml("./graphs/gBp")
     gd2 = nx.read_graphml("./graphs/gDp")
     gb2_prunned = nx.read_graphml("./graphs/gBp_prunned")
     gd2_prunned = nx.read_graphml("./graphs/gDp_prunned")
+    gw = nx.read_graphml("./graphs/gw")
 
     # Common nodes
     """print("Number of nodes of gB: ", len(gb.nodes))
@@ -217,10 +219,13 @@ if __name__ == '__main__':
     degree_distribution_gd = get_degree_distribution(gd, filename="./degree_distribution/dict_gd.csv")
     print("Degree distribution of gD: ", degree_distribution_gd)
     degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gdp.csv")
-    print("Degree distribution of gD bidir: ", degree_distribution_gb2)"""
+    print("Degree distribution of gD bidir: ", degree_distribution_gb2)
+    degree_distribution_gbp_prunned = get_degree_distribution(gb2_prunned, filename="./degree_distribution/dict_gbp_prunned.csv")
+    degree_distribution_gbp_prunned = get_degree_distribution(gd2_prunned, filename="./degree_distribution/dict_gdp_prunned.csv")
+    degree_distribution_gw = get_degree_distribution(gw, filename="./degree_distribution/dict_gw.csv")"""
 
     # K most central node
-    top_nodes_d = get_k_most_central(gb2, metric="degree", num_nodes=25)
+    """top_nodes_d = get_k_most_central(gb2, metric="degree", num_nodes=25)
     top_nodes_b = get_k_most_central(gb2, metric='betweenness', num_nodes=25)
     common = set(top_nodes_d).intersection(top_nodes_b)
     print("Common nodes of 25 top nodes with degree and betweenness centrality: ", len(common))
@@ -231,13 +236,13 @@ if __name__ == '__main__':
     min_size_clique, cliques_sizes = find_cliques_question(gd2_prunned)
     print("Number of cliques per size of gD bidir: ",cliques_sizes)
 
-    analyze_max_size_clique(gb2)
-    analyze_max_size_clique(gd2)
+    #analyze_max_size_clique(gb2)
+    #analyze_max_size_clique(gd2)
 
     # Detect communities
     communities_gd, modularity_gd = detect_communities(gd2_prunned, method='girvan-newman')
     print(f"Number of communities of gD bidir with Girvan-Newman: {len(communities_gd)}. Modularity: {modularity_gd}")
     communities_gd_l, modularity_gd_l = detect_communities(gd2_prunned, method='louvain')
-    print(f"Number of communities of gD bidir with Louvain: {len(communities_gd_l)}. Modularity: {modularity_gd_l}")
+    print(f"Number of communities of gD bidir with Louvain: {len(communities_gd_l)}. Modularity: {modularity_gd_l}")"""
 
     # ------------------- END OF MAIN ------------------------ #

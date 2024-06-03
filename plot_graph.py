@@ -30,12 +30,17 @@ gd = nx.read_graphml("./graphs/gD")
 gdp = nx.read_graphml("./graphs/gDp")
 gbp_prunned = nx.read_graphml("./graphs/gBp_prunned")
 gdp_prunned = nx.read_graphml("./graphs/gDp_prunned")
+gw = nx.read_graphml("./graphs/gw")
+gw_prunned = nx.read_graphml("./graphs/gw_prunned")
+
 # Plot
-#plot_graph(gb, "./graphs/png_gB.png")
-#plot_graph(gbp, "./graphs/png_gBp.png")
-#plot_graph(gd, "./graphs/png_gD.png")
-#plot_graph(gdp, "./graphs/png_gDp.png")
-plot_graph(gbp_prunned, "./graphs/png_gBp_prunned.png")
-plot_graph(gdp_prunned, "./graphs/png_gDp_prunned.png")
+#plot_graph(gb, "./graphs/plots/png_gB.png")
+#plot_graph(gbp, "./graphs/plots/png_gBp.png")
+#plot_graph(gd, "./graphs/plots/png_gD.png")
+#plot_graph(gdp, "./graphs/plots/png_gDp.png")
+#plot_graph(gbp_prunned, "./graphs/plots/png_gBp_prunned.png")
+#plot_graph(gdp_prunned, "./graphs/plots/png_gDp_prunned.png")
+#plot_graph(gw, "./graphs/plots/png_gw.png")
+#plot_graph(gw_prunned, "./graphs/plots/png_gw_prunned.png")
 
 

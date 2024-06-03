@@ -16,31 +16,33 @@ def graph_info(G):
     print("Order:", G.order())
     print("Size:", G.size())
 
-    # Calculate in-degrees and out-degrees
-    in_degrees = [d for n, d in G.in_degree()]
-    out_degrees = [d for n, d in G.out_degree()]
+    if isinstance(G, nx.DiGraph):
 
-    # Calculate minimum, maximum, and median of in-degrees
-    min_in_degree = min(in_degrees)
-    max_in_degree = max(in_degrees)
-    median_in_degree = statistics.median(in_degrees)
+        # Calculate in-degrees and out-degrees
+        in_degrees = [d for n, d in G.in_degree()]
+        out_degrees = [d for n, d in G.out_degree()]
 
-    # Calculate minimum, maximum, and median of out-degrees
-    min_out_degree = min(out_degrees)
-    max_out_degree = max(out_degrees)
-    median_out_degree = statistics.median(out_degrees)
+        # Calculate minimum, maximum, and median of in-degrees
+        min_in_degree = min(in_degrees)
+        max_in_degree = max(in_degrees)
+        median_in_degree = statistics.median(in_degrees)
 
-    print("\nIN-DEGREE:")
-    print("Minimum:", min_in_degree)
-    print("Maximum:", max_in_degree)
-    print("Median:", median_in_degree)
-    #print("In-degrees:", sorted(in_degrees))
+        # Calculate minimum, maximum, and median of out-degrees
+        min_out_degree = min(out_degrees)
+        max_out_degree = max(out_degrees)
+        median_out_degree = statistics.median(out_degrees)
 
-    print("\nOUT-DEGREE:")
-    print("Minimum:", min_out_degree)
-    print("Maximum:", max_out_degree)
-    print("Median:", median_out_degree)
-    #print("Out-degrees:", sorted(out_degrees))
+        print("\nIN-DEGREE:")
+        print("Minimum:", min_in_degree)
+        print("Maximum:", max_in_degree)
+        print("Median:", median_in_degree)
+        #print("In-degrees:", sorted(in_degrees))
+
+        print("\nOUT-DEGREE:")
+        print("Minimum:", min_out_degree)
+        print("Maximum:", max_out_degree)
+        print("Median:", median_out_degree)
+        #print("Out-degrees:", sorted(out_degrees))
 
 
 
@@ -95,6 +97,8 @@ if __name__ == "__main__":
     gd = nx.read_graphml("./graphs/gD")
     gbp = nx.read_graphml("./graphs/gBp")
     gdp = nx.read_graphml("./graphs/gDp")
+    gbp_prunned = nx.read_graphml("./graphs/gBp_prunned")
+    gdp_prunned = nx.read_graphml("./graphs/gDp_prunned")
     songs = pd.read_csv("./graphs/songs.csv")
 
     # PART 1: DATA ADQUISITION
@@ -103,6 +107,12 @@ if __name__ == "__main__":
     graph_info(gb)
     print("\n#----------Info about GD:------------#")
     graph_info(gd)
+    print("\n#----------Info about GBp:------------#")
+    graph_info(gbp)
+    graph_info(gbp_prunned)
+    print("\n#----------Info about GDp:------------#")
+    graph_info(gdp)
+    graph_info(gdp_prunned)
 
     print("\n#----------Info about songs:-----------#")
     # datase_info(songs)
@@ -114,11 +124,26 @@ if __name__ == "__main__":
     analyze_graph_components(gd, "gd")
     analyze_graph_components(gbp, "gbp")
     analyze_graph_components(gdp, "gdp")
+    analyze_graph_components(gbp_prunned, "gbp prunned")
+    analyze_graph_components(gdp_prunned, "gdp prunned")
     # ...
 
-    # PART 2: DATA ADQUISITION
+    # PART 3: DATA PREPROCESSING
     print("\n#-------------PART 3-----------------#\n")
-    # 1. Used functions in notebook 3.
-    # 2. Used functions in notebook 3.
+    # 1/2/3/4/5. Used functions in notebook 3.
+    # ...
 
-
+    # PART 4: DATA PREPROCESSING
+    print("\n#-------------PART 4-----------------#\n")
+    # 1.c)
+    id_Taylor = "06HL4z0CvFAxyc27GXpf02"
+    id_most_similar = "13ubrt8QOOCPljQ2FL1Kca"
+    id_less_similar = "1lqO9zpSZ9iEkgEgJqc443"
+    distance_gb_most = nx.shortest_path(gb, source=id_Taylor, target=id_most_similar)
+    print("Distance gB between Taylor and ASAP:",distance_gb_most, len(distance_gb_most))
+    #distance_gd_most = nx.shortest_path(gd, source=id_Taylor, target=id_most_similar)
+    #print("Distance gD between Taylor and ASAP:",distance_gd_most, len(distance_gd_most))
+    #distance_gb_less = nx.shortest_path(gb, source=id_Taylor, target=id_less_similar)
+    #print("Distance gB between Taylor and Ray Lozano:",distance_gb_less, len(distance_gb_less))
+    distance_gd_less = nx.shortest_path(gd, source=id_Taylor, target=id_less_similar)
+    print("Distance gD between Taylor and Ray Lozano:",distance_gd_less, len(distance_gd_less))

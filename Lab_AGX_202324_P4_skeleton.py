@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import csv
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 import seaborn as sns
+import networkx as nx
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 def load_dict_from_csv(filename:str) -> dict:
@@ -18,6 +19,45 @@ def load_dict_from_csv(filename:str) -> dict:
             key, value = int(row[0]), int(row[1])
             dictionary[key] = value
     return dictionary
+
+def most_less_similar_node(graph: nx.Graph, node: int):
+    # Check if the node exists in the graph
+    if node not in graph:
+        raise ValueError(f"Node {node} not found in the graph.")
+    
+    # Get all edges connected to the given node
+    edges = graph[node].items()
+    
+    # Find the edge with the highest weight
+    most_similar = max(edges, key=lambda x: x[1]['weight'])
+    less_similar = min(edges, key=lambda x: x[1]['weight'])
+    
+    # Get the most similar node ID and its similarity score
+    most_similar_node_id = most_similar[0]
+    similarity_score = most_similar[1]['weight']
+    less_similar_node_id = less_similar[0]
+    less_similarity_score = less_similar[1]['weight']
+    
+    # Get the 'name' attribute of the most similar node
+    most_similar_node_name = graph.nodes[most_similar_node_id].get('name', 'Unknown')
+    less_similar_node_name = graph.nodes[less_similar_node_id].get('name', 'Unknown')
+    
+    # Return the most similar node ID, similarity score, and name
+    return (most_similar_node_id, similarity_score, most_similar_node_name), (less_similar_node_id, less_similarity_score, less_similar_node_name)
+
+def find_node_by_attribute(graph: nx.Graph, attribute: str, value):
+    """
+    Find the node ID by a given attribute value.
+
+    :param graph: A NetworkX graph.
+    :param attribute: The attribute name to search for.
+    :param value: The attribute value to match.
+    :return: The node ID with the matching attribute value, or None if not found.
+    """
+    for node, attrs in graph.nodes(data=True):
+        if attribute in attrs and attrs[attribute] == value:
+            return node
+    return None
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
@@ -86,6 +126,11 @@ def plot_audio_features(artists_audio_feat: pd.DataFrame, artist1_id: str, artis
     feat1 = feat1.drop(['artist_id', 'artist_name'])
     feat2 = feat2.drop(['artist_id', 'artist_name'])
 
+    # Convert the 'duration' feature from seconds to hours
+    feat1['duration'] /= 3600
+    feat2['duration'] /= 3600
+
+
     # Plotting
     fig, ax = plt.subplots(figsize=(12, 8))
     indices = range(len(feat1.index))
@@ -101,6 +146,12 @@ def plot_audio_features(artists_audio_feat: pd.DataFrame, artist1_id: str, artis
     ax.set_xticklabels(feat1.index, rotation=45)
     ax.legend()
     ax.grid(True)
+
+    # Add numbers on top of the bars
+    for bar in bars1 + bars2:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height, round(height, 2), ha='center', va='bottom')
+
 
     plt.savefig(filename, format='png', bbox_inches='tight')
 
@@ -138,29 +189,58 @@ def plot_similarity_heatmap(artist_audio_features_df: pd.DataFrame, similarity: 
     plt.title('Correlation Heatmap of Audio Features')
     plt.xlabel('Audio Features')
     plt.ylabel('Audio Features')
+
+    plt.savefig(out_filename, format='png', bbox_inches='tight')
+
     plt.show()
     # ----------------- END OF FUNCTION --------------------- #
 
 
 if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
-    # Plot degree distribution
-    dict_gb = load_dict_from_csv("./degree_distribution/dict_gb.csv")
-    plot_degree_distribution(dict_gb, title= "GB", filename="./degree_distribution/degree_distr_gb1.png")
-    plot_degree_distribution(dict_gb, title= "GB", filename="./degree_distribution/degree_distr_gb2.png", normalized=True, loglog=True)
-    dict_gb_bidir = load_dict_from_csv("./degree_distribution/dict_gb_bidir.csv")
-    plot_degree_distribution(dict_gb, title= "GB bidir", filename="./degree_distribution/degree_distr_gb_bidir1.png")
-    plot_degree_distribution(dict_gb, title= "GB bidir", filename="./degree_distribution/degree_distr_gb_bidir2.png", normalized=True, loglog=True)
-    dict_gd = load_dict_from_csv("./degree_distribution/dict_gd.csv")
-    plot_degree_distribution(dict_gd, title= "GD", filename="./degree_distribution/degree_distr_gd1.png")
-    plot_degree_distribution(dict_gd, title= "GD", filename="./degree_distribution/degree_distr_gd2.png", normalized=True, loglog=True)
-    dict_gd_bidir = load_dict_from_csv("./degree_distribution/dict_gd_bidir.csv")
-    plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gd_bidir1.png")
-    plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gd_bidir2.png", normalized=True, loglog=True)
+    # a. Plot degree distribution
+    # gB
+    #dict_gb = load_dict_from_csv("./degree_distribution/dict_gb.csv")
+    #plot_degree_distribution(dict_gb, title= "GB", filename="./degree_distribution/degree_distr_gb1.png")
+    #plot_degree_distribution(dict_gb, title= "GB", filename="./degree_distribution/degree_distr_gb2.png", normalized=True, loglog=True)
+    #dict_gb_bidir = load_dict_from_csv("./degree_distribution/dict_gb_bidir.csv")
+    #plot_degree_distribution(dict_gb, title= "GB bidir", filename="./degree_distribution/degree_distr_gbp1.png")
+    #plot_degree_distribution(dict_gb, title= "GB bidir", filename="./degree_distribution/degree_distr_gbp2.png", normalized=True, loglog=True)
+    #dict_gbp_prunned = load_dict_from_csv("./degree_distribution/dict_gbp_prunned.csv")
+    #plot_degree_distribution(dict_gbp_prunned, title= "GB bidir prunned", filename="./degree_distribution/degree_distr_gbp_prunned1.png")
+    #plot_degree_distribution(dict_gbp_prunned, title= "GB bidir prunned", filename="./degree_distribution/degree_distr_gbp_prunned2.png", normalized=True, loglog=True)
+    # gD
+    #dict_gd = load_dict_from_csv("./degree_distribution/dict_gd.csv")
+    #plot_degree_distribution(dict_gd, title= "GD", filename="./degree_distribution/degree_distr_gd1.png")
+    #plot_degree_distribution(dict_gd, title= "GD", filename="./degree_distribution/degree_distr_gd2.png", normalized=True, loglog=True)
+    #dict_gd_bidir = load_dict_from_csv("./degree_distribution/dict_gdp1.csv")
+    #plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gdp1.png")
+    #plot_degree_distribution(dict_gd, title= "GD bidir", filename="./degree_distribution/degree_distr_gdp2.png", normalized=True, loglog=True)
+    #dict_gdp_prunned = load_dict_from_csv("./degree_distribution/dict_gdp_prunned.csv")
+    #plot_degree_distribution(dict_gdp_prunned, title= "GD bidir prunned", filename="./degree_distribution/degree_distr_gdp_prunned1.png")
+    #plot_degree_distribution(dict_gdp_prunned, title= "GD bidir prunned", filename="./degree_distribution/degree_distr_gdp_prunned2.png", normalized=True, loglog=True)
+    # gw
+    #dict_gw = load_dict_from_csv("./degree_distribution/dict_gw.csv")
+    #plot_degree_distribution(dict_gw, title= "GW", filename="./degree_distribution/degree_distr_gw1.png")
+    #plot_degree_distribution(dict_gw, title= "GW", filename="./degree_distribution/degree_distr_gw2.png", normalized=True, loglog=True)
+
+    # b/c. Plot audio features
+    """gw = nx.read_graphml("./graphs/gw")
+    # Find most and less similar node to Taylor Swift
+    artist1_id = find_node_by_attribute(gw, attribute="name", value="Taylor Swift")
+    print(artist1_id)
+    (artist2_id, similarity_score_a2, artist2_name),(artist3_id, similarity_score_a3, artist3_name) = most_less_similar_node(gw, node=artist1_id)
+    print("Most similar artist to Taylor Swift:", artist2_id, similarity_score_a2, artist2_name)
+    print("Less similar artist to Taylor Swift:",artist3_id, similarity_score_a3, artist3_name)
+    # Create audio features plots
+    mean_audio_feat = pd.read_csv("./graphs/mean_audio_features.csv")
+    plot_audio_features(mean_audio_feat, artist1_id, artist2_id, f"./mean_audio_features/mean_audio_feat_Taylor_{artist2_name}.png")
+    plot_audio_features(mean_audio_feat, artist1_id, artist3_id, f"./mean_audio_features/mean_audio_feat_Taylor_{artist3_name}.png")"""
     
-    # Plot audio features
-    #dict_mean_audio_feat = load_dict_from_csv("./degree_distribution/mean_audio_feat.csv")
-    #plot_audio_features(dict_mean_audio_feat, artist1_id, artist2_id, "mean_audio_feat_Artist1_artist2")
-    # Plot similarity measure
-    # ...
+
+    # d. Plot similarity heatmap
+    mean_audio_feat = pd.read_csv("./graphs/mean_audio_features.csv")
+    plot_similarity_heatmap(mean_audio_feat, similarity="cosine", out_filename="./graphs/plots/similarity_heatmap_cosine.png")
+    
+    # e. Plot in plot_graphs
     # ------------------- END OF MAIN ------------------------ #

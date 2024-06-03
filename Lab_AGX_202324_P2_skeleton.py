@@ -1,10 +1,51 @@
 import networkx as nx
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 
+# Functions to answer questions from Part 4
+def plot_connected_component_sizes(graph: nx.Graph, thresholds, filename):
+    sizes = []
+
+    for threshold in thresholds:
+        pruned_graph = prune_low_weight_edges(graph.copy(), min_weight=threshold)
+        largest_cc = max(nx.connected_components(pruned_graph), key=len)
+        sizes.append(len(largest_cc))
+
+    plt.plot(thresholds, sizes)
+    plt.xlabel('Threshold')
+    plt.ylabel('Size of the Largest Connected Component')
+    plt.title('Evolution of Largest Connected Component with Threshold')
+    plt.savefig(filename, format='png', bbox_inches='tight')
+    plt.show()
+
+def find_optimal_percentile(graph: nx.Graph, start_percentile=99, step=1):
+    """
+    Find the optimal percentile to prune edges of a weighted similarity graph to preserve the size of the largest connected component.
+
+    :param graph: Weighted similarity graph (NetworkX).
+    :param start_percentile: Starting percentile value.
+    :param step: Step size for decreasing the percentile.
+    :return: Optimal percentile value.
+    """
+    original_largest_cc_size = len(max(nx.connected_components(graph), key=len))
+    print("original",original_largest_cc_size)
+    percentile = start_percentile
+
+    while True:
+        pruned_graph = prune_low_weight_edges(graph.copy(), min_percentile=percentile)
+        largest_cc_size = len(max(nx.connected_components(pruned_graph), key=len))
+        print(largest_cc_size)
+
+        if largest_cc_size == original_largest_cc_size:
+            percentile -= step
+        else:
+            break
+
+    return percentile
 
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
@@ -82,25 +123,36 @@ def prune_low_weight_edges(g: nx.Graph, min_weight=None, min_percentile=None, ou
     elif min_weight is not None and min_percentile is not None:
       raise ValueError("Only one of the parameters [min_weight, min_percentile] should be specified")
 
+    # Create a list of edges to prune
+    edges_to_prune = []
+
+    # Get edge weights
     edge_weights = [data['weight'] for u, v, data in g.edges(data=True)]
 
     for u, v, data in g.edges(data=True):
-      weight = data.get('weight', None)
+        weight = data.get('weight', None)
 
-      if min_weight is not None:
-        if weight < min_weight:
-          g.remove_edge(u,v)
+        if min_weight is not None and weight is not None:
+            if weight < min_weight:
+                edges_to_prune.append((u, v))
 
-      elif min_percentile is not None:
-        weight_percentile = np.percentile(edge_weights, min_percentile)
-        if weight < weight_percentile:
-          g.remove_edge(u,v)
+        elif min_percentile is not None and weight is not None:
+            weight_percentile = np.percentile(edge_weights, min_percentile)
+            if weight < weight_percentile:
+                edges_to_prune.append((u, v))
+
+    print("num edges to prune: ",len(edges_to_prune))
+
+    # Remove edges from the graph
+    for u, v in edges_to_prune:
+        g.remove_edge(u, v)
 
     # Remove zero-degree nodes
     zero_degree_nodes = [node for node, degree in dict(g.degree()).items() if degree == 0]
     g.remove_nodes_from(zero_degree_nodes)
 
-    nx.write_graphml(g, out_filename)
+    if out_filename is not None:
+        nx.write_graphml(g, out_filename)
 
     return g
     # ----------------- END OF FUNCTION --------------------- #
@@ -140,17 +192,19 @@ def create_similarity_graph(artist_audio_features_df: pd.DataFrame, similarity: 
 
     # Create edges
     for i in range(len(artist_audio_features_df)):
-      artist = np.array(artist_audio_features_df.iloc[i,2:])
+      artist = np.array(artist_audio_features_df.iloc[i,2:]).reshape(1, -1)
 
       for j in range(i+1, len(artist_audio_features_df)):
-        artist2 = np.array(artist_audio_features_df.iloc[j,2:])
+        artist2 = np.array(artist_audio_features_df.iloc[j,2:]).reshape(1, -1)
         if similarity=='cosine':
-          sim = cosine_similarity(artist,artist2)
+          sim = cosine_similarity(artist,artist2)[0][0]
         elif similarity=='euclidean':
-          dist = euclidean_distances(artist,artist2)
+          dist = euclidean_distances(artist,artist2)[0][0]
           sim = 1 / (1 + dist)
 
-        G.add_edge(artist, artist2, weight=sim)
+        artist_id_i = artist_audio_features_df.iloc[i]['artist_id']
+        artist_id_j = artist_audio_features_df.iloc[j]['artist_id']
+        G.add_edge(artist_id_i, artist_id_j, weight=sim)
 
     nx.write_graphml(G, out_filename)
 
@@ -166,16 +220,27 @@ if __name__ == "__main__":
     #gb2 = retrieve_bidirectional_edges(gb, "./graphs/gBp")
     #gd2 = retrieve_bidirectional_edges(gd, "./graphs/gDp")
 
-    # Prune low degree edges
+    # Prune low degree nodes
     #gb2 = nx.read_graphml("./graphs/gBp")
     #gb2_prunned = prune_low_degree_nodes(gb2, min_degree=1, out_filename="./graphs/gBp_prunned")
     #gd2 = nx.read_graphml("./graphs/gDp")
     #gd2_prunned = prune_low_degree_nodes(gd2, min_degree=1, out_filename="./graphs/gDp_prunned")
 
+
     # Get undirected graph gw
-    #songs_df = pd.read_csv("songs.csv")
-    #mean_audio_features_df = compute_mean_audio_features(songs_df)
-    #mean_audio_features_df.to_csv("mean_audio_features", index=False)
+    #songs_df = pd.read_csv("./graphs/songs.csv")
+    #!mean_audio_features_df = compute_mean_audio_features(songs_df) --> change to that it only does artists in BOTH GRAPHS
+    #mean_audio_features_df.to_csv("./graphs/mean_audio_features.csv", index=False)
     #gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
+
+    # e) from Part 4 ex4: Prune low weight edges
+    gw = nx.read_graphml("./graphs/gw")
+    #gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=0.8, out_filename="./graphs/gw_prunned")
+    #!thresholds = np.linspace(0, 1, 10)  # Example thresholds
+    #!plot_connected_component_sizes(gw, thresholds, 'connected_component_sizes.png')
+    # d) from Part 4 ex1 Report - CHANGE!! takes too long
+    #!optimal_percentile = find_optimal_percentile(gw)
+    #!print("Optimal percentile:", optimal_percentile)
+
     
     # ------------------- END OF MAIN ------------------------ #
