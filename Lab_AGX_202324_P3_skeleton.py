@@ -199,7 +199,9 @@ if __name__ == '__main__':
     gw = nx.read_graphml("./graphs/gw")
 
     # Common nodes
-    """print("Number of nodes of gB: ", len(gb.nodes))
+
+    """print("#----------1.Common nodes------------#\n")
+    print("Number of nodes of gB: ", len(gb.nodes))
     print("Number of nodes of gB bidir: ", len(gb2.nodes))
     print("Number of nodes if gD: ", len(gd.nodes))
     print("Number of nodes of gD bidir: ", len(gd2.nodes))
@@ -209,10 +211,20 @@ if __name__ == '__main__':
     n_common_nodes = num_common_nodes([gb,gb2])
     print("Number of common nodes of gB and gB bidir: ", n_common_nodes)
     n_common_nodes = num_common_nodes([gb,gb2_prunned])
-    print("Number of common nodes of gB and gB bidir prunned: ", n_common_nodes)"""
-
-    # Degree distribution
-    """degree_distribution_gb = get_degree_distribution(gb, filename="./degree_distribution/dict_gb.csv")
+    print("Number of common nodes of gB and gB bidir prunned: ", n_common_nodes)
+    """
+    
+    # K most central node
+    """print("\n#----------2.Most central nodes------------#\n")
+    top_nodes_d = get_k_most_central(gb2, metric="degree", num_nodes=25)
+    top_nodes_b = get_k_most_central(gb2, metric='betweenness', num_nodes=25)
+    common = set(top_nodes_d).intersection(top_nodes_b)
+    print("Common nodes of 25 top nodes with degree and betweenness centrality: ", len(common))
+    """
+    
+    # Degree distribution 
+    """print("\n#----------3.Degree distribution------------#\n")
+    degree_distribution_gb = get_degree_distribution(gb, filename="./degree_distribution/dict_gb.csv")
     print("Degree distribution of gB: ", degree_distribution_gb)
     degree_distribution_gb2 = get_degree_distribution(gb2, filename="./degree_distribution/dict_gbp.csv")
     print("Degree distribution of gB bidir: ", degree_distribution_gb2)
@@ -221,28 +233,27 @@ if __name__ == '__main__':
     degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gdp.csv")
     print("Degree distribution of gD bidir: ", degree_distribution_gb2)
     degree_distribution_gbp_prunned = get_degree_distribution(gb2_prunned, filename="./degree_distribution/dict_gbp_prunned.csv")
-    degree_distribution_gbp_prunned = get_degree_distribution(gd2_prunned, filename="./degree_distribution/dict_gdp_prunned.csv")"""
-    #degree_distribution_gw = get_degree_distribution(gw, filename="./degree_distribution/dict_gw.csv")
-
-    # K most central node
-    """top_nodes_d = get_k_most_central(gb2, metric="degree", num_nodes=25)
-    top_nodes_b = get_k_most_central(gb2, metric='betweenness', num_nodes=25)
-    common = set(top_nodes_d).intersection(top_nodes_b)
-    print("Common nodes of 25 top nodes with degree and betweenness centrality: ", len(common))
+    degree_distribution_gbp_prunned = get_degree_distribution(gd2_prunned, filename="./degree_distribution/dict_gdp_prunned.csv")
+    degree_distribution_gw = get_degree_distribution(gw, filename="./degree_distribution/dict_gw.csv")
+    """
+    
 
     # Find cliques 
+    """print("\n#----------4.Find cliques------------#\n")
     min_size_clique, cliques_sizes = find_cliques_question(gb2_prunned)
     print("Number of cliques per size of gB bidir: ",cliques_sizes)
     min_size_clique, cliques_sizes = find_cliques_question(gd2_prunned)
     print("Number of cliques per size of gD bidir: ",cliques_sizes)
 
     #analyze_max_size_clique(gb2)
-    #analyze_max_size_clique(gd2)
+    #analyze_max_size_clique(gd2)"""
 
     # Detect communities
+    """print("\n#----------5.Find communities------------#\n")
     communities_gd, modularity_gd = detect_communities(gd2_prunned, method='girvan-newman')
     print(f"Number of communities of gD bidir with Girvan-Newman: {len(communities_gd)}. Modularity: {modularity_gd}")
     communities_gd_l, modularity_gd_l = detect_communities(gd2_prunned, method='louvain')
-    print(f"Number of communities of gD bidir with Louvain: {len(communities_gd_l)}. Modularity: {modularity_gd_l}")"""
+    print(f"Number of communities of gD bidir with Louvain: {len(communities_gd_l)}. Modularity: {modularity_gd_l}")
+    """
 
     # ------------------- END OF MAIN ------------------------ #

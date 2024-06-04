@@ -2,7 +2,8 @@ import statistics
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
-from Lab_AGX_202324_P2_skeleton import *
+from Lab_AGX_202324_P2_skeleton import prune_low_weight_edges
+from Lab_AGX_202324_P4_skeleton import find_node_by_attribute
 
 # ----------------- PART 1 --------------------- #
 
@@ -79,10 +80,76 @@ def analyze_graph_components(graph, name):
         print(f"{name}: Num connected components: {num_cc}")
     else:
         print(f"{name}: Unsupported graph type")
-    
+
+def gw_report(gw):
+    # (a) Finding the most and least similar artist pairs
+    edges = gw.edges(data=True)
+    most_similar_artists = max(edges, key=lambda x: x[2]['weight'])
+    least_similar_artists = min(edges, key=lambda x: x[2]['weight'])
+
+    names_most_similar_artists = find_name_by_id(gw,most_similar_artists)
+    names_least_similar_artists = find_name_by_id(gw,least_similar_artists)
+
+    print(f"Most similar artists: {names_most_similar_artists}")
+    print(f"Least similar artists: {names_least_similar_artists}")
+
+    # (b) Calculating the weighted degree centrality
+    weighted_degrees = dict(gw.degree(weight='weight'))
+    most_similar_to_all = max(weighted_degrees, key=weighted_degrees.get)
+    least_similar_to_all = min(weighted_degrees, key=weighted_degrees.get)
+
+    name_most_similar_to_all = find_name_by_id(gw, [most_similar_to_all])
+    name_least_similar_to_all = find_name_by_id(gw, [least_similar_to_all])
+
+    print(f"Most similar to all: {name_most_similar_to_all}")
+    print(f"Least similar to all: {name_least_similar_to_all}")
 
 # ----------------- PART 3 --------------------- #
 
+def find_dominating_set(graph):
+    # Calculate betweenness centrality for each node
+    betweenness = nx.betweenness_centrality(graph)
+    
+    # Initialize the set of nodes to cover and the dominating set
+    nodes_to_cover = set(graph.nodes())
+    dominating_set = set()
+
+    while nodes_to_cover:
+        # Find the node with the highest betweenness centrality
+        max_betweenness_node = max(nodes_to_cover, key=lambda n: betweenness[n])
+        
+        # Add this node to the dominating set
+        dominating_set.add(max_betweenness_node)
+        
+        # Remove the node and its neighbors from the set of nodes to be covered
+        nodes_to_cover -= set(graph.neighbors(max_betweenness_node))
+        nodes_to_cover.discard(max_betweenness_node)
+        
+        # Remove the selected node from betweenness dictionary to avoid selecting it again
+        del betweenness[max_betweenness_node]
+
+    return dominating_set
+
+def select_top_nodes_by_betweenness(graph, budget, cost_per_artist):
+    # Calculate betweenness centrality for each node
+    betweenness = nx.betweenness_centrality(graph)
+    
+    # Sort nodes by betweenness centrality in descending order
+    sorted_nodes = sorted(betweenness, key=betweenness.get, reverse=True)
+    
+    # Determine the number of artists we can afford with the given budget
+    num_artists = budget // cost_per_artist
+    
+    # Select the top nodes based on the budget
+    selected_artists = sorted_nodes[:num_artists]
+
+    # Get the names of the artists
+    names_selected_artists = find_name_by_id(graph, selected_artists)
+    
+    # Get the betweenness centrality values of the selected artists
+    selected_artists_betweenness = [betweenness[artist] for artist in selected_artists]
+
+    return names_selected_artists, selected_artists_betweenness
 
 # ----------------- PART 4 --------------------- #
 def find_name_by_id(graph: nx.Graph, ids:list):
@@ -174,25 +241,60 @@ if __name__ == "__main__":
     print("\n#----------Info about GDp:------------#")
     graph_info(gdp)
     graph_info(gdp_prunned)
-
     print("\n#----------Info about songs:-----------#")
-    # datase_info(songs)
+    dataset_info(songs)
 
     # PART 2: DATA ADQUISITION
-    print("\n#-------------PART 2-----------------#\n")
+    print("\n#---------------PART 2-------------------#\n")
     # 1/2. Strong / weak connected components
+    print("#----------Connected components---------#\n")
     analyze_graph_components(gb, "gb")
     analyze_graph_components(gd, "gd")
     analyze_graph_components(gbp, "gbp")
     analyze_graph_components(gdp, "gdp")
     analyze_graph_components(gbp_prunned, "gbp prunned")
     analyze_graph_components(gdp_prunned, "gdp prunned")
-    # ...
+    # 3. gw report
+    print("\n#----------------gW report---------------#\n")
+    gw_report(gw)
 
     # PART 3: DATA PREPROCESSING
     print("\n#-------------PART 3-----------------#\n")
     # 1/2/3/4/5. Used functions in notebook 3.
-    # ...
+    # 6. Advertising campaign
+    # a)
+    print("\n#-------------6.a)-----------------#\n")
+    dominating_set_gB = find_dominating_set(gb)
+    print(f"Number of dominating nodes of gB: {len(dominating_set_gB)}")
+    dominating_set_gD = find_dominating_set(gd)
+    print(f"Number of dominating nodes of gD: {len(dominating_set_gD)}")
+    cost_gB = len(dominating_set_gB) * 100
+    cost_gD = len(dominating_set_gD) * 100
+    print(f"Minimum cost for gB: {cost_gB} euros")
+    print(f"Minimum cost for gD: {cost_gD} euros")
+
+    print("\n#-------------6.b)-----------------#\n")
+    # Selecting top nodes for gB and gD
+    selected_artists_gB, betweenness_gb = select_top_nodes_by_betweenness(gb, budget=400, cost_per_artist=100)
+    selected_artists_gD, betweenness_gd = select_top_nodes_by_betweenness(gd, budget=400, cost_per_artist=100)
+    print(f"Selected artists for gB: {selected_artists_gB} and their betweenness: {betweenness_gb}")
+    print(f"Selected artists for gD: {selected_artists_gD} and their betweenness: {betweenness_gd}")
+
+    # 7.
+    print("\n#--------------7------------------#\n")
+    start_artist, end_artist = "Taylor Swift", "THE DRIVER ERA"
+    start_artist_id = find_node_by_attribute(gb, attribute="name", value=start_artist)
+    end_artist_id = find_node_by_attribute(gb, attribute="name", value=end_artist)
+
+    try: # Find the shortest path
+        shortest_path = nx.shortest_path(gb, source=start_artist_id, target=end_artist_id)
+        num_hops = len(shortest_path) - 1
+        print(f"Minimum number of hops from '{start_artist}' to '{end_artist}': {num_hops}")
+        print(f"Path: {find_name_by_id(gb,shortest_path)}")
+    except nx.NetworkXNoPath:
+        print(f"There is no path from '{start_artist}' to '{end_artist}' in the graph.")
+    except nx.NodeNotFound as e:
+        print(e)
 
     # PART 4: DATA PREPROCESSING
     print("\n#-------------PART 4-----------------#\n")
@@ -215,14 +317,9 @@ if __name__ == "__main__":
     distance_gd_less = nx.shortest_path(gd, source=id_Taylor, target=id_less_similar)
     names_path = find_name_by_id(gd, distance_gd_less)
     print("Distance gD between Taylor and Charli XCX:",distance_gd_less, names_path, len(distance_gd_less))"""
-
-    print("\n#-------------Ex.4 e)-----------------#\n")
-    """# e) from Part 4 ex4: Prune low weight edges
-    thresholds = [90,91,92,93,94,95,96,97,98,99]
-    plot_connected_component_sizes(gw, thresholds, './graphs/plots/connected_component_sizes.png')"""
     
     print("\n#-------------1.d)-----------------#\n")
-    # d) from Part 4 ex1 Report
+    # 1.d)
     """print(f"Initial number of nodes: {len(gw.nodes())}, Initial number of edges: {len(gw.edges())}")
     print("\nStarting with percentile 50...")
     optimal_percentile = find_optimal_percentile(gw, start_percentile=50)
@@ -230,3 +327,10 @@ if __name__ == "__main__":
     print("\nCreating gw prunned...")
     gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=optimal_percentile-1, out_filename="./graphs/gw_prunned")
     print(f"Final number of nodes: {len(gw_prunned.nodes())}, Final number of edges: {len(gw_prunned.edges())}")"""
+    
+    print("\n#-------------Ex.4 e)-----------------#\n")
+    """# e) from Part 4 ex4: Prune low weight edges
+    thresholds = [90,91,92,93,94,95,96,97,98,99]
+    plot_connected_component_sizes(gw, thresholds, './graphs/plots/connected_component_sizes.png')"""
+    
+    

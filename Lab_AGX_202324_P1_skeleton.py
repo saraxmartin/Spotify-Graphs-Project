@@ -261,10 +261,9 @@ if __name__ == "__main__":
     #visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    gb = nx.read_graphml("./graphs/gB")
-    gd = nx.read_graphml("./graphs/gD")
-    D = get_track_data(sp, graphs=[gb,gd], out_filename="songs")
-    # D = get_track_data(sp, graphs=[gd], out_filename="gB_TaylorSwift")
+    #gb = nx.read_graphml("./graphs/gB")
+    #gd = nx.read_graphml("./graphs/gD")
+    #D = get_track_data(sp, graphs=[gb,gd], out_filename="songs")
 
     # Create BFS graph for Pastel Ghost
     #seed = search_artist(sp,"Pastel Ghost")
