@@ -181,10 +181,10 @@ def plot_similarity_heatmap(artist_audio_features_df: pd.DataFrame, similarity: 
         sim_matrix = 1 / (1 + euclidean_dist_matrix)
 
     # Plot heatmap
-    plt.figure(figsize=(10, 8))
-    heatmap = sns.heatmap(sim_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
-    heatmap.set_xticklabels(artist_names, rotation=45)
-    heatmap.set_yticklabels(artist_names, rotation=0)
+    plt.figure(figsize=(90, 85))
+    heatmap = sns.heatmap(sim_matrix, annot=False, cmap='coolwarm', linewidths=0.2)
+    heatmap.set_xticklabels(artist_names, rotation=45, fontsize=7)
+    heatmap.set_yticklabels(artist_names, rotation=0, fontsize=7)
 
     plt.title('Correlation Heatmap of Audio Features')
     plt.xlabel('Audio Features')
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     #plot_degree_distribution(dict_gw, title= "GW", filename="./degree_distribution/degree_distr_gw2.png", normalized=True, loglog=True)
 
     # b/c. Plot audio features
-    """gw = nx.read_graphml("./graphs/gw")
+    gw = nx.read_graphml("./graphs/gw")
     # Find most and less similar node to Taylor Swift
     artist1_id = find_node_by_attribute(gw, attribute="name", value="Taylor Swift")
     print(artist1_id)
@@ -235,12 +235,12 @@ if __name__ == "__main__":
     # Create audio features plots
     mean_audio_feat = pd.read_csv("./graphs/mean_audio_features.csv")
     plot_audio_features(mean_audio_feat, artist1_id, artist2_id, f"./mean_audio_features/mean_audio_feat_Taylor_{artist2_name}.png")
-    plot_audio_features(mean_audio_feat, artist1_id, artist3_id, f"./mean_audio_features/mean_audio_feat_Taylor_{artist3_name}.png")"""
+    plot_audio_features(mean_audio_feat, artist1_id, artist3_id, f"./mean_audio_features/mean_audio_feat_Taylor_{artist3_name}.png")
     
 
     # d. Plot similarity heatmap
-    mean_audio_feat = pd.read_csv("./graphs/mean_audio_features.csv")
-    plot_similarity_heatmap(mean_audio_feat, similarity="cosine", out_filename="./graphs/plots/similarity_heatmap_cosine.png")
+    #mean_audio_feat = pd.read_csv("./graphs/mean_audio_features_updated.csv")
+    #plot_similarity_heatmap(mean_audio_feat, similarity="eucledian", out_filename="./graphs/plots/similarity_heatmap_eucledian.png")
     
     # e. Plot in plot_graphs
     # ------------------- END OF MAIN ------------------------ #

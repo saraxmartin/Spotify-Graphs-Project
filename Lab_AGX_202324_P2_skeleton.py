@@ -47,6 +47,24 @@ def find_optimal_percentile(graph: nx.Graph, start_percentile=99, step=1):
 
     return percentile
 
+def both_graphs_artists(mean_features_artists: pd.DataFrame, gb: nx.DiGraph, gd: nx.DiGraph, out_filename: str)-> pd.DataFrame:
+    """
+    Get a Dataframe with the mean features of only artists that belong in both graphs
+
+    :param mean_features_artists: a pandas DataFrame.
+    :param gb: graph BFS
+    :param gd: graph DFS
+    :param out_filename: name of the file that will be saved.
+    :return: updated_df: updated pandas DatFrame
+    """
+    # Get common nodes of both graphs
+    common_nodes = set(gb.nodes()).intersection(gd.nodes())
+    # Filter DataFrame
+    updated_df = mean_features_artists[mean_features_artists['artist_id'].isin(common_nodes)]
+    # Save new dataframe
+    updated_df.to_csv(out_filename, index=False)
+
+    return updated_df
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
 def retrieve_bidirectional_edges(g: nx.DiGraph, out_filename: str) -> nx.Graph:
@@ -229,9 +247,10 @@ if __name__ == "__main__":
 
     # Get undirected graph gw
     #songs_df = pd.read_csv("./graphs/songs.csv")
-    #!mean_audio_features_df = compute_mean_audio_features(songs_df) --> change to that it only does artists in BOTH GRAPHS
+    #mean_audio_features_df = compute_mean_audio_features(songs_df)
     #mean_audio_features_df.to_csv("./graphs/mean_audio_features.csv", index=False)
-    #gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
+    #mean_feat_updated = both_graphs_artists(mean_audio_features_df, gb, gd, out_filename="./graphs/mean_audio_features_updated.csv")
+    #gw = create_similarity_graph(mean_feat_updated, similarity="cosine",out_filename="./graphs/gw")
 
     # e) from Part 4 ex4: Prune low weight edges
     gw = nx.read_graphml("./graphs/gw")
@@ -239,8 +258,11 @@ if __name__ == "__main__":
     #!thresholds = np.linspace(0, 1, 10)  # Example thresholds
     #!plot_connected_component_sizes(gw, thresholds, 'connected_component_sizes.png')
     # d) from Part 4 ex1 Report - CHANGE!! takes too long
-    #!optimal_percentile = find_optimal_percentile(gw)
-    #!print("Optimal percentile:", optimal_percentile)
+    #optimal_percentile = find_optimal_percentile(gw)
+    #print("Optimal percentile:", optimal_percentile)
+    gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=99, out_filename="./graphs/gw_prunned")
 
+    print(len(gw.edges()))
+    print(len(gw_prunned.edges()))
     
     # ------------------- END OF MAIN ------------------------ #

@@ -81,12 +81,22 @@ def analyze_graph_components(graph, name):
 # ----------------- PART 3 --------------------- #
 
 
-
-
 # ----------------- PART 4 --------------------- #
+def find_name_by_id(graph: nx.Graph, ids:list):
+    """
+    Find the node Name by its ID.
 
-
-
+    :param graph: A NetworkX graph.
+    :param attribute: The attribute name to search for.
+    :param value: The attribute value to match.
+    :return: The node ID with the matching attribute value, or None if not found.
+    """
+    new_list = []
+    for id in ids:
+        for node, attrs in graph.nodes(data=True):
+            if node == id:
+                new_list.append(attrs["name"])
+    return new_list
 
 
 # ------------ ANSWER QUESTIONS------------------ #
@@ -137,13 +147,19 @@ if __name__ == "__main__":
     print("\n#-------------PART 4-----------------#\n")
     # 1.c)
     id_Taylor = "06HL4z0CvFAxyc27GXpf02"
-    id_most_similar = "13ubrt8QOOCPljQ2FL1Kca"
-    id_less_similar = "1lqO9zpSZ9iEkgEgJqc443"
+    id_most_similar = "6KImCVD70vtIoJWnq6nGn3"
+    id_less_similar = "25uiPmTg16RbhZWAqwLBy5"
+    # Most similar
     distance_gb_most = nx.shortest_path(gb, source=id_Taylor, target=id_most_similar)
-    print("Distance gB between Taylor and ASAP:",distance_gb_most, len(distance_gb_most))
-    #distance_gd_most = nx.shortest_path(gd, source=id_Taylor, target=id_most_similar)
-    #print("Distance gD between Taylor and ASAP:",distance_gd_most, len(distance_gd_most))
-    #distance_gb_less = nx.shortest_path(gb, source=id_Taylor, target=id_less_similar)
-    #print("Distance gB between Taylor and Ray Lozano:",distance_gb_less, len(distance_gb_less))
+    names_path = find_name_by_id(gb, distance_gb_most)
+    print("Distance gB between Taylor and Harry:",distance_gb_most, names_path, len(distance_gb_most))
+    distance_gd_most = nx.shortest_path(gd, source=id_Taylor, target=id_most_similar)
+    names_path = find_name_by_id(gd, distance_gd_most)
+    print("Distance gD between Taylor and Harry:",distance_gd_most, names_path, len(distance_gd_most))
+    # Less similar
+    distance_gb_less = nx.shortest_path(gb, source=id_Taylor, target=id_less_similar)
+    names_path = find_name_by_id(gb, distance_gb_less)
+    print("Distance gB between Taylor and Charli XCX:",distance_gb_less, names_path, len(distance_gb_less))
     distance_gd_less = nx.shortest_path(gd, source=id_Taylor, target=id_less_similar)
-    print("Distance gD between Taylor and Ray Lozano:",distance_gd_less, len(distance_gd_less))
+    names_path = find_name_by_id(gd, distance_gd_less)
+    print("Distance gD between Taylor and Charli XCX:",distance_gd_less, names_path, len(distance_gd_less))

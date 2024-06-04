@@ -221,8 +221,8 @@ if __name__ == '__main__':
     degree_distribution_gd2 = get_degree_distribution(gd2, filename="./degree_distribution/dict_gdp.csv")
     print("Degree distribution of gD bidir: ", degree_distribution_gb2)
     degree_distribution_gbp_prunned = get_degree_distribution(gb2_prunned, filename="./degree_distribution/dict_gbp_prunned.csv")
-    degree_distribution_gbp_prunned = get_degree_distribution(gd2_prunned, filename="./degree_distribution/dict_gdp_prunned.csv")
-    degree_distribution_gw = get_degree_distribution(gw, filename="./degree_distribution/dict_gw.csv")"""
+    degree_distribution_gbp_prunned = get_degree_distribution(gd2_prunned, filename="./degree_distribution/dict_gdp_prunned.csv")"""
+    #degree_distribution_gw = get_degree_distribution(gw, filename="./degree_distribution/dict_gw.csv")
 
     # K most central node
     """top_nodes_d = get_k_most_central(gb2, metric="degree", num_nodes=25)
