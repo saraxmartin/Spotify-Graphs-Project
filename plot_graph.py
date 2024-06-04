@@ -31,7 +31,7 @@ gdp = nx.read_graphml("./graphs/gDp")
 gbp_prunned = nx.read_graphml("./graphs/gBp_prunned")
 gdp_prunned = nx.read_graphml("./graphs/gDp_prunned")
 gw = nx.read_graphml("./graphs/gw")
-#gw_prunned = nx.read_graphml("./graphs/gw_prunned")
+gw_prunned = nx.read_graphml("./graphs/gw_prunned")
 
 # Plot
 #plot_graph(gb, "./graphs/plots/png_gB.png")

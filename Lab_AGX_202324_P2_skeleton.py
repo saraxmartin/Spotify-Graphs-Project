@@ -6,47 +6,6 @@ from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 
-# Functions to answer questions from Part 4
-def plot_connected_component_sizes(graph: nx.Graph, thresholds, filename):
-    sizes = []
-
-    for threshold in thresholds:
-        pruned_graph = prune_low_weight_edges(graph.copy(), min_weight=threshold)
-        largest_cc = max(nx.connected_components(pruned_graph), key=len)
-        sizes.append(len(largest_cc))
-
-    plt.plot(thresholds, sizes)
-    plt.xlabel('Threshold')
-    plt.ylabel('Size of the Largest Connected Component')
-    plt.title('Evolution of Largest Connected Component with Threshold')
-    plt.savefig(filename, format='png', bbox_inches='tight')
-    plt.show()
-
-def find_optimal_percentile(graph: nx.Graph, start_percentile=99, step=1):
-    """
-    Find the optimal percentile to prune edges of a weighted similarity graph to preserve the size of the largest connected component.
-
-    :param graph: Weighted similarity graph (NetworkX).
-    :param start_percentile: Starting percentile value.
-    :param step: Step size for decreasing the percentile.
-    :return: Optimal percentile value.
-    """
-    original_largest_cc_size = len(max(nx.connected_components(graph), key=len))
-    print("original",original_largest_cc_size)
-    percentile = start_percentile
-
-    while True:
-        pruned_graph = prune_low_weight_edges(graph.copy(), min_percentile=percentile)
-        largest_cc_size = len(max(nx.connected_components(pruned_graph), key=len))
-        print(largest_cc_size)
-
-        if largest_cc_size == original_largest_cc_size:
-            percentile -= step
-        else:
-            break
-
-    return percentile
-
 def both_graphs_artists(mean_features_artists: pd.DataFrame, gb: nx.DiGraph, gd: nx.DiGraph, out_filename: str)-> pd.DataFrame:
     """
     Get a Dataframe with the mean features of only artists that belong in both graphs
@@ -159,8 +118,12 @@ def prune_low_weight_edges(g: nx.Graph, min_weight=None, min_percentile=None, ou
             if weight < weight_percentile:
                 edges_to_prune.append((u, v))
 
-    print("num edges to prune: ",len(edges_to_prune))
+    if min_weight is not None:
+        print(f"Number of edges to prune with min_weight {min_weight}: ",len(edges_to_prune))
+    elif min_percentile is not None:
+        print(f"Number of edges to prune with min_percentile {min_percentile}: {len(edges_to_prune)}. The min_weight is {weight_percentile}.")
 
+    print(f"Number of edges initially: {len(g.edges())}; Number of edges after deletion: {len(g.edges()) - len(edges_to_prune)}.")
     # Remove edges from the graph
     for u, v in edges_to_prune:
         g.remove_edge(u, v)
@@ -252,17 +215,5 @@ if __name__ == "__main__":
     #mean_feat_updated = both_graphs_artists(mean_audio_features_df, gb, gd, out_filename="./graphs/mean_audio_features_updated.csv")
     #gw = create_similarity_graph(mean_feat_updated, similarity="cosine",out_filename="./graphs/gw")
 
-    # e) from Part 4 ex4: Prune low weight edges
-    gw = nx.read_graphml("./graphs/gw")
-    #gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=0.8, out_filename="./graphs/gw_prunned")
-    #!thresholds = np.linspace(0, 1, 10)  # Example thresholds
-    #!plot_connected_component_sizes(gw, thresholds, 'connected_component_sizes.png')
-    # d) from Part 4 ex1 Report - CHANGE!! takes too long
-    #optimal_percentile = find_optimal_percentile(gw)
-    #print("Optimal percentile:", optimal_percentile)
-    gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=99, out_filename="./graphs/gw_prunned")
-
-    print(len(gw.edges()))
-    print(len(gw_prunned.edges()))
     
     # ------------------- END OF MAIN ------------------------ #

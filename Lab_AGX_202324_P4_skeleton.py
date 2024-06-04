@@ -225,7 +225,7 @@ if __name__ == "__main__":
     #plot_degree_distribution(dict_gw, title= "GW", filename="./degree_distribution/degree_distr_gw2.png", normalized=True, loglog=True)
 
     # b/c. Plot audio features
-    gw = nx.read_graphml("./graphs/gw")
+    """gw = nx.read_graphml("./graphs/gw")
     # Find most and less similar node to Taylor Swift
     artist1_id = find_node_by_attribute(gw, attribute="name", value="Taylor Swift")
     print(artist1_id)
@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     # d. Plot similarity heatmap
     #mean_audio_feat = pd.read_csv("./graphs/mean_audio_features_updated.csv")
-    #plot_similarity_heatmap(mean_audio_feat, similarity="eucledian", out_filename="./graphs/plots/similarity_heatmap_eucledian.png")
+    #plot_similarity_heatmap(mean_audio_feat, similarity="eucledian", out_filename="./graphs/plots/similarity_heatmap_eucledian.png")"""
     
-    # e. Plot in plot_graphs
+    # e. Plot in report_questions.py
     # ------------------- END OF MAIN ------------------------ #

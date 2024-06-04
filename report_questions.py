@@ -1,6 +1,9 @@
 import statistics
 import networkx as nx
 import pandas as pd
+import matplotlib.pyplot as plt
+from Lab_AGX_202324_P2_skeleton import *
+
 # ----------------- PART 1 --------------------- #
 
 def dataset_info(df):
@@ -98,6 +101,53 @@ def find_name_by_id(graph: nx.Graph, ids:list):
                 new_list.append(attrs["name"])
     return new_list
 
+def plot_connected_component_sizes(graph: nx.Graph, thresholds, filename):
+    """
+    Show plot of evolution of biggest connected component size 
+    with different min_percentiles thresholds.
+
+    :param graph: A Networkx graph.
+    :param thresholds: a list of thresholds.
+    :param filename: str of filename.
+    """
+    sizes = []
+
+    for threshold in thresholds:
+        pruned_graph = prune_low_weight_edges(graph.copy(), min_percentile=threshold)
+        largest_cc = max(nx.connected_components(pruned_graph), key=len)
+        sizes.append(len(largest_cc))
+
+    plt.plot(thresholds, sizes)
+    plt.xlabel('Threshold')
+    plt.ylabel('Size of the Largest Connected Component')
+    plt.title('Evolution of Largest Connected Component with Threshold')
+    plt.savefig(filename, format='png', bbox_inches='tight')
+    plt.show()
+
+def find_optimal_percentile(graph: nx.Graph, start_percentile=90, step=1):
+    """
+    Find the optimal percentile to prune edges of a weighted similarity graph to preserve the size of the largest connected component.
+
+    :param graph: Weighted similarity graph (NetworkX).
+    :param start_percentile: Starting percentile value.
+    :param step: Step size for decreasing the percentile.
+    :return: Optimal percentile value.
+    """
+    original_largest_cc_size = len(max(nx.connected_components(graph), key=len))
+    print("Original size of the larges connected component: ", original_largest_cc_size)
+    percentile = start_percentile
+
+    while True:
+        pruned_graph = prune_low_weight_edges(graph.copy(), min_percentile=percentile)
+        largest_cc_size = len(max(nx.connected_components(pruned_graph), key=len))
+        print(f"Largest conected component size after prunning with percentile {percentile}: {largest_cc_size}")
+
+        if largest_cc_size == original_largest_cc_size:
+            percentile += step
+        else:
+            break
+
+    return percentile
 
 # ------------ ANSWER QUESTIONS------------------ #
 if __name__ == "__main__":
@@ -110,6 +160,7 @@ if __name__ == "__main__":
     gbp_prunned = nx.read_graphml("./graphs/gBp_prunned")
     gdp_prunned = nx.read_graphml("./graphs/gDp_prunned")
     songs = pd.read_csv("./graphs/songs.csv")
+    gw = nx.read_graphml("./graphs/gw")
 
     # PART 1: DATA ADQUISITION
     print("#-------------PART 1-----------------#\n")
@@ -145,7 +196,8 @@ if __name__ == "__main__":
 
     # PART 4: DATA PREPROCESSING
     print("\n#-------------PART 4-----------------#\n")
-    # 1.c)
+    print("\n#-------------1.c)-----------------#\n")
+    """# 1.c)
     id_Taylor = "06HL4z0CvFAxyc27GXpf02"
     id_most_similar = "6KImCVD70vtIoJWnq6nGn3"
     id_less_similar = "25uiPmTg16RbhZWAqwLBy5"
@@ -162,4 +214,19 @@ if __name__ == "__main__":
     print("Distance gB between Taylor and Charli XCX:",distance_gb_less, names_path, len(distance_gb_less))
     distance_gd_less = nx.shortest_path(gd, source=id_Taylor, target=id_less_similar)
     names_path = find_name_by_id(gd, distance_gd_less)
-    print("Distance gD between Taylor and Charli XCX:",distance_gd_less, names_path, len(distance_gd_less))
+    print("Distance gD between Taylor and Charli XCX:",distance_gd_less, names_path, len(distance_gd_less))"""
+
+    print("\n#-------------Ex.4 e)-----------------#\n")
+    """# e) from Part 4 ex4: Prune low weight edges
+    thresholds = [90,91,92,93,94,95,96,97,98,99]
+    plot_connected_component_sizes(gw, thresholds, './graphs/plots/connected_component_sizes.png')"""
+    
+    print("\n#-------------1.d)-----------------#\n")
+    # d) from Part 4 ex1 Report
+    """print(f"Initial number of nodes: {len(gw.nodes())}, Initial number of edges: {len(gw.edges())}")
+    print("\nStarting with percentile 50...")
+    optimal_percentile = find_optimal_percentile(gw, start_percentile=50)
+    print("Optimal percentile:", optimal_percentile-1)
+    print("\nCreating gw prunned...")
+    gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=optimal_percentile-1, out_filename="./graphs/gw_prunned")
+    print(f"Final number of nodes: {len(gw_prunned.nodes())}, Final number of edges: {len(gw_prunned.edges())}")"""
