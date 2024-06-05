@@ -163,21 +163,20 @@ def get_track_data(sp: spotipy.client.Spotify, graphs: list, out_filename: str) 
     :return: pandas dataframe with track data.
     """
     # ------- IMPLEMENT HERE THE BODY OF THE FUNCTION ------- #
-    artists = []
-
     song_name, song_id, song_duration = [], [], []
     acoustic, dance, energy, instrumental, liveness, loudness, speech, tempo, valence, popularity  = [],[],[],[],[],[],[],[],[],[]
     album_name, album_id, album_date = [],[],[]
     artist_name, artist_id = [],[]
 
-    for graph in graphs:
-      artists.extend(list(graph.nodes()))
-      print('extending graph...')
+    common_nodes = set(graphs[0].nodes())  # Start with nodes of the first graph
+
+    for graph in graphs[1:]:  # Iterate over the remaining graphs
+        common_nodes &= set(graph.nodes())  # Take intersection with the nodes of the current graph
+
+    artists = list(common_nodes)
 
     for art_id in artists:
-      print(art_id)
       artist = sp.artist(art_id)['name']
-      print(artist)
       top_tracks = sp.artist_top_tracks(art_id, country='ES')['tracks']
       track_ids = [track['id'] for track in top_tracks]
       audio_features = sp.audio_features(track_ids)
@@ -261,9 +260,9 @@ if __name__ == "__main__":
     #visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    #gb = nx.read_graphml("./graphs/gB")
-    #gd = nx.read_graphml("./graphs/gD")
-    #D = get_track_data(sp, graphs=[gb,gd], out_filename="songs")
+    # gb = nx.read_graphml("./graphs/gB")
+    # gd = nx.read_graphml("./graphs/gD")
+    # D = get_track_data(sp, graphs=[gb,gd], out_filename="songs_updated")
 
     # Create BFS graph for Pastel Ghost
     #seed = search_artist(sp,"Pastel Ghost")
