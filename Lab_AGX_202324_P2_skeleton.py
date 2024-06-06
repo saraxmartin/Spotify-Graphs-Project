@@ -6,24 +6,7 @@ from sklearn.metrics.pairwise import euclidean_distances, cosine_similarity
 
 # ------- IMPLEMENT HERE ANY AUXILIARY FUNCTIONS NEEDED ------- #
 
-def both_graphs_artists(mean_features_artists: pd.DataFrame, gb: nx.DiGraph, gd: nx.DiGraph, out_filename: str)-> pd.DataFrame:
-    """
-    Get a Dataframe with the mean features of only artists that belong in both graphs
 
-    :param mean_features_artists: a pandas DataFrame.
-    :param gb: graph BFS
-    :param gd: graph DFS
-    :param out_filename: name of the file that will be saved.
-    :return: updated_df: updated pandas DatFrame
-    """
-    # Get common nodes of both graphs
-    common_nodes = set(gb.nodes()).intersection(gd.nodes())
-    # Filter DataFrame
-    updated_df = mean_features_artists[mean_features_artists['artist_id'].isin(common_nodes)]
-    # Save new dataframe
-    updated_df.to_csv(out_filename, index=False)
-
-    return updated_df
 # --------------- END OF AUXILIARY FUNCTIONS ------------------ #
 
 def retrieve_bidirectional_edges(g: nx.DiGraph, out_filename: str) -> nx.Graph:
