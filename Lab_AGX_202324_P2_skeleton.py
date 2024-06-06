@@ -195,8 +195,7 @@ if __name__ == "__main__":
     songs_df = pd.read_csv("./graphs/songs_updated.csv")
     mean_audio_features_df = compute_mean_audio_features(songs_df)
     mean_audio_features_df.to_csv("./graphs/mean_audio_features_songs.csv", index=False)
-    mean_feat_updated = both_graphs_artists(mean_audio_features_df, gb, gd, out_filename="./graphs/mean_audio_features_updated.csv")
-    gw = create_similarity_graph(mean_feat_updated, similarity="cosine",out_filename="./graphs/gw")
+    gw = create_similarity_graph(mean_audio_features_df, similarity="cosine",out_filename="./graphs/gw")
 
     
     # ------------------- END OF MAIN ------------------------ #
