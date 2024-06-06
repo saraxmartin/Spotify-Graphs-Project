@@ -226,7 +226,7 @@ if __name__ == "__main__":
     gdp = nx.read_graphml("./graphs/gDp")
     gbp_prunned = nx.read_graphml("./graphs/gBp_prunned")
     gdp_prunned = nx.read_graphml("./graphs/gDp_prunned")
-    songs = pd.read_csv("./graphs/songs.csv")
+    songs = pd.read_csv("./graphs/songs_updated.csv")
     gw = nx.read_graphml("./graphs/gw")
 
     # PART 1: DATA ADQUISITION
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     # PART 4: DATA PREPROCESSING
     print("\n#-------------PART 4-----------------#\n")
     print("\n#-------------1.c)-----------------#\n")
-    """# 1.c)
+    # 1.c)
     id_Taylor = "06HL4z0CvFAxyc27GXpf02"
     id_most_similar = "6KImCVD70vtIoJWnq6nGn3"
     id_less_similar = "25uiPmTg16RbhZWAqwLBy5"
@@ -316,21 +316,19 @@ if __name__ == "__main__":
     print("Distance gB between Taylor and Charli XCX:",distance_gb_less, names_path, len(distance_gb_less))
     distance_gd_less = nx.shortest_path(gd, source=id_Taylor, target=id_less_similar)
     names_path = find_name_by_id(gd, distance_gd_less)
-    print("Distance gD between Taylor and Charli XCX:",distance_gd_less, names_path, len(distance_gd_less))"""
+    print("Distance gD between Taylor and Charli XCX:",distance_gd_less, names_path, len(distance_gd_less))
     
     print("\n#-------------1.d)-----------------#\n")
     # 1.d)
-    """print(f"Initial number of nodes: {len(gw.nodes())}, Initial number of edges: {len(gw.edges())}")
+    print(f"Initial number of nodes: {len(gw.nodes())}, Initial number of edges: {len(gw.edges())}")
     print("\nStarting with percentile 50...")
     optimal_percentile = find_optimal_percentile(gw, start_percentile=50)
     print("Optimal percentile:", optimal_percentile-1)
     print("\nCreating gw prunned...")
     gw_prunned = prune_low_weight_edges(gw, min_weight=None, min_percentile=optimal_percentile-1, out_filename="./graphs/gw_prunned")
-    print(f"Final number of nodes: {len(gw_prunned.nodes())}, Final number of edges: {len(gw_prunned.edges())}")"""
+    print(f"Final number of nodes: {len(gw_prunned.nodes())}, Final number of edges: {len(gw_prunned.edges())}")
     
     print("\n#-------------Ex.4 e)-----------------#\n")
-    """# e) from Part 4 ex4: Prune low weight edges
+    # e) from Part 4 ex4: Prune low weight edges
     thresholds = [90,91,92,93,94,95,96,97,98,99]
-    plot_connected_component_sizes(gw, thresholds, './graphs/plots/connected_component_sizes.png')"""
-    
-    
+    plot_connected_component_sizes(gw, thresholds, './graphs/plots/connected_component_sizes.png')

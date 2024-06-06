@@ -237,12 +237,7 @@ if __name__ == "__main__":
     # ------- IMPLEMENT HERE THE MAIN FOR THIS SESSION ------- #
 
     # Get Spotify client object
-    # CLIENT_ID = "59435f3767f5407395e8a21c91f1b719"
-    # CLIENT_ID = "1bc3dfa825e14b1c9e79c0a5ad59d3d8"
-    CLIENT_ID = "c2530bbdac80448191d16672a06e625e" # amelia new
-    
-    # CLIENT_SECRET = "aa930752eeeb4e1ab36bd7bfff2cd0ff"
-    # CLIENT_SECRET = "f3b8b67e5ce74c199b0292e40750fe58"
+    CLIENT_ID = "c2530bbdac80448191d16672a06e625e"
     CLIENT_SECRET = "b395386b3d894efc98819a4c9f6e3a7c"
 
     auth_manager = SpotifyClientCredentials (client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
@@ -252,21 +247,21 @@ if __name__ == "__main__":
     seed = search_artist(sp,"Taylor Swift")
 
     # Create and visualize the BFS graph
-    #gb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/gB")
-    #visualize_graph(gb, title="BFS Taylor Swift graph")
+    gb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/gB")
+    visualize_graph(gb, title="BFS Taylor Swift graph")
 
     # Create and visualize the DFS graph
-    #gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
-    #visualize_graph(gd, title="DFS Taylor Swift graph")
+    gd = crawler(sp, seed, max_nodes_to_crawl=100, strategy="DFS", out_filename="./graphs/gD")
+    visualize_graph(gd, title="DFS Taylor Swift graph")
 
     # Obtain dataset of songs from artists of previous graphs
-    # gb = nx.read_graphml("./graphs/gB")
-    # gd = nx.read_graphml("./graphs/gD")
-    # D = get_track_data(sp, graphs=[gb,gd], out_filename="songs_updated")
+    gb = nx.read_graphml("./graphs/gB")
+    gd = nx.read_graphml("./graphs/gD")
+    D = get_track_data(sp, graphs=[gb,gd], out_filename="songs_updated")
 
     # Create BFS graph for Pastel Ghost
-    #seed = search_artist(sp,"Pastel Ghost")
-    #hb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/hB")
-    #visualize_graph(hb, title="BFS Pastel Ghost graph")
+    seed = search_artist(sp,"Pastel Ghost")
+    hb = crawler(sp, seed, max_nodes_to_crawl=100, strategy="BFS", out_filename="./graphs/hB")
+    visualize_graph(hb, title="BFS Pastel Ghost graph")
 
     # ------------------- END OF MAIN ------------------------ #
